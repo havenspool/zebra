@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>{$title}</title>
+		<meta name="description" content="" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- basic styles -->
+		<link href="/zebra/Public/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="/zebra/Public/css/bootstrap-responsive.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="/zebra/Public/css/font-awesome.min.css" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="css/font-awesome-ie7.min.css" />
+		<![endif]-->
+		<!-- page specific plugin styles -->
+		
+		<!-- ace styles -->
+		<link rel="stylesheet" href="/zebra/Public/css/ace.min.css" />
+		<link rel="stylesheet" href="/zebra/Public/css/ace-responsive.min.css" />
+		<link rel="stylesheet" href="/zebra/Public/css/ace-skins.min.css" />
+		<!--[if lt IE 9]>
+		  <link rel="stylesheet" href="css/ace-ie.min.css" />
+		<![endif]-->
+	</head>
+	<body>
+		<div class="navbar navbar-inverse">
+		  <div class="navbar-inner">
+		   <div class="container-fluid">
+			  <a class="brand" href="#"><small><i class="icon-leaf"></i> 统计后台</small> </a>
+			  <ul class="nav ace-nav pull-right">			
+					<li class="light-blue user-profile">
+						<a class="user-menu dropdown-toggle" href="#" data-toggle="dropdown">
+							<img alt="Jason's Photo" src="/zebra/Public/avatars/user.jpg" class="nav-user-photo" />
+							<span id="user_info">
+								<small>欢迎,</small> {$username}
+							</span>
+							<i class="icon-caret-down"></i>
+						</a>
+						<ul id="user_menu" class="pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-closer">
+							<li><a href="#"><i class="icon-cog"></i> 系统设置</a></li>
+							<li><a href="#"><i class="icon-user"></i> 上传文件</a></li>
+							<li class="divider"></li>
+							<li><a href="#"><i class="icon-off"></i> 退出</a></li>
+						</ul>
+					</li>
+			  </ul><!--/.ace-nav-->
+		   </div><!--/.container-fluid-->
+		  </div><!--/.navbar-inner-->
+		</div><!--/.navbar-->
+		<div class="container-fluid" id="main-container">
+			<a href="#" id="menu-toggler"><span></span></a><!-- menu toggler -->
+
+
+
+			<div id="sidebar">
+
+				
+
+				<div id="sidebar-shortcuts">
+
+					<div id="sidebar-shortcuts-large">
+
+						<button class="btn btn-small btn-success"><i class="icon-signal"></i></button>
+
+						<button class="btn btn-small btn-info"><i class="icon-pencil"></i></button>
+
+						<button class="btn btn-small btn-warning"><i class="icon-group"></i></button>
+
+						<button class="btn btn-small btn-danger"><i class="icon-cogs"></i></button>
+
+					</div>
+
+					<div id="sidebar-shortcuts-mini">
+
+						<span class="btn btn-success"></span>
+
+						<span class="btn btn-info"></span>
+
+						<span class="btn btn-warning"></span>
+
+						<span class="btn btn-danger"></span>
+
+					</div>
+
+				</div><!-- #sidebar-shortcuts -->
+
+
+
+				<ul class="nav nav-list">
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>概况</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="__APP__/Home/index/login.html"><i class="icon-double-angle-right"></i>实时统计</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>整体趋势</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>用户分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>新增用户</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>付费用户</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>活跃用户</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>流失用户</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>回归用户</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>启动次数</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>版本分布</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>行业数据</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>渠道分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>时段详情</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>渠道列表</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>效果跟踪</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>用户终生价值</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>留存分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>留存用户</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>用户跟踪</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>用户新鲜度</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>付费分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>付费排行榜</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>付费趋势</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>付费转化</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>付费渗透</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>付费习惯</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>付费间隔</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>关卡分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>关卡详情</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>新手任务引导转化</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>消费分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>虚拟货币来源分析</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>消费消耗分析</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>用户参与度</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>使用时长</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>使用频率</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>访问页面</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>使用间隔</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>功能使用</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>页面访问路径</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>自定义事件</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>事件转化率</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>终端属性</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>设备</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>网络及运营商</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>地域</a></li>
+					  </ul>
+					</li>
+					
+					<li>
+					  <a href="#" class="dropdown-toggle" >
+						<i class="icon-desktop"></i>
+						<span>错误分析</span>
+						<b class="arrow icon-angle-down"></b>
+					  </a>
+					  <ul class="submenu">
+						<li><a href="elements.html"><i class="icon-double-angle-right"></i>错误趋势</a></li>
+						<li><a href="buttons.html"><i class="icon-double-angle-right"></i>错误列表</a></li>
+					  </ul>
+					</li>
+				</ul><!--/.nav-list-->
+				<div id="sidebar-collapse"><i class="icon-double-angle-left"></i></div>
+			</div><!--/#sidebar-->
+
+
+
+		
+			<div id="main-content" class="clearfix">				
+
+					<div id="breadcrumbs">
+
+						<ul class="breadcrumb">
+
+							<li><i class="icon-home"></i> <a href="#">Home</a><span class="divider"><i class="icon-angle-right"></i></span></li>
+
+							<li><a href="#">Other Pages</a> <span class="divider"><i class="icon-angle-right"></i></span></li>
+							<li class="active">Blank Page</li>
+						</ul><!--.breadcrumb-->
+
+
+
+						<div id="nav-search">
+
+							<form class="form-search">
+
+									<span class="input-icon">
+
+										<input autocomplete="off" id="nav-search-input" type="text" class="input-small search-query" placeholder="Search ..." />
+
+										<i id="nav-search-icon" class="icon-search"></i>
+
+									</span>
+
+							</form>
+
+						</div><!--#nav-search-->
+
+					</div><!--#breadcrumbs-->
+
+
+
+					<div id="page-content" class="clearfix">
+						
+						<div class="row-fluid">
+<!-- PAGE CONTENT BEGINS HERE -->
+<!-- PAGE CONTENT ENDS HERE -->
+						 </div><!--/row-->
+	
+					</div><!--/#page-content-->
+					  
+					<div id="ace-settings-container">
+						<div class="btn btn-app btn-mini btn-warning" id="ace-settings-btn">
+							<i class="icon-cog"></i>
+						</div>
+						<div id="ace-settings-box">
+							<div>
+								<div class="pull-left">
+									<select id="skin-colorpicker" class="hidden">
+										<option data-class="default" value="#438EB9">#438EB9</option>
+										<option data-class="skin-1" value="#222A2D">#222A2D</option>
+										<option data-class="skin-2" value="#C6487E">#C6487E</option>
+										<option data-class="skin-3" value="#D0D0D0">#D0D0D0</option>
+									</select>
+								</div>
+								<span>&nbsp; Choose Skin</span>
+							</div>
+							<div><input type="checkbox" class="ace-checkbox-2" id="ace-settings-header" /><label class="lbl" for="ace-settings-header"> Fixed Header</label></div>
+							<div><input type="checkbox" class="ace-checkbox-2" id="ace-settings-sidebar" /><label class="lbl" for="ace-settings-sidebar"> Fixed Sidebar</label></div>
+						</div>
+					</div><!--/#ace-settings-container-->
+			</div><!-- #main-content -->
+		</div><!--/.fluid-container#main-container-->
+		<a href="#" id="btn-scroll-up" class="btn btn-small btn-inverse">
+			<i class="icon-double-angle-up icon-only"></i>
+		</a>
+		<!-- basic scripts -->
+		<script src="/zebra/Public/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript">
+		window.jQuery || document.write("<script src='/zebra/Public/js/jquery-1.9.1.min.js'>\x3C/script>");
+		</script>
+		
+		<script src="/zebra/Public/js/bootstrap.min.js"></script>
+		<!-- page specific plugin scripts -->
+		
+		<!-- ace scripts -->
+		<script src="/zebra/Public/js/ace-elements.min.js"></script>
+		<script src="/zebra/Public/js/ace.min.js"></script>
+		<!-- inline scripts related to this page -->
+		
+	</body>
+</html>

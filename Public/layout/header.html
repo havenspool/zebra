@@ -1,0 +1,43 @@
+		<div class="navbar navbar-inverse">
+		  <div class="navbar-inner">
+		   <div class="container-fluid">
+			  <a class="brand" href="#"><small><i class="icon-leaf"></i> 统计后台</small> </a>
+			  <ul class="nav ace-nav pull-right">			
+					<li class="light-blue user-profile">
+						<a class="user-menu dropdown-toggle" href="#" data-toggle="dropdown">
+							<img alt="Jason's Photo" src="/zebra/Public/avatars/user.jpg" class="nav-user-photo" />
+							<span id="user_info">
+								<small>欢迎,</small> {$username}
+							</span>
+							<i class="icon-caret-down"></i>
+						</a>
+						<ul id="user_menu" class="pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-closer">
+							<li><a href="#"><i class="icon-cog"></i> 系统设置</a></li>
+							<li><a href="#"><i class="icon-user"></i> 上传文件</a></li>
+							<li class="divider"></li>
+							<li><a href="#"><i class="icon-off"></i> 退出</a></li>
+						</ul>
+					</li>
+			  </ul><!--/.ace-nav-->
+		   </div><!--/.container-fluid-->
+		  </div><!--/.navbar-inner-->
+		</div><!--/.navbar-->
+		
+		<div class="container-fluid" id="main-container">
+			<a href="#" id="menu-toggler"><span></span></a><!-- menu toggler -->
+			<div id="sidebar">
+				<div id="sidebar-shortcuts">
+					<div id="sidebar-shortcuts-large">
+						<button class="btn btn-small btn-success"><i class="icon-signal"></i></button>
+						<button class="btn btn-small btn-info"><i class="icon-pencil"></i></button>
+						<button class="btn btn-small btn-warning"><i class="icon-group"></i></button>
+						<button class="btn btn-small btn-danger"><i class="icon-cogs"></i></button>
+					</div>
+
+					<div id="sidebar-shortcuts-mini">
+						<span class="btn btn-success"></span>
+						<span class="btn btn-info"></span>
+						<span class="btn btn-warning"></span>
+						<span class="btn btn-danger"></span>
+					</div>
+				</div><!-- #sidebar-shortcuts -->

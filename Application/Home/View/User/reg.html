@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>注册</title>
+<title>{$title}</title>
 <meta name="description" content="User login page" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- basic styles -->
@@ -51,29 +51,41 @@
 											<div class="space-6"></div>
 											<p>请输入以下信息:</p>
 
-											<form>
+											<form action="__URL__/doreg" method="post">
 												<fieldset>
 													<label> <span
 														class="block input-icon input-icon-right"> <input
-															type="email" class="span12" placeholder="邮箱" /> <i
+															type="email" id="email" name="email" class="span12" placeholder="邮箱" /> <i
 															class="icon-envelope"></i>
 													</span>
 													</label> <label> <span
 														class="block input-icon input-icon-right"> <input
-															type="text" class="span12" placeholder="用户名" /> <i
+															type="text"  id="username" name="username" class="span12" placeholder="用户名" /> <i
 															class="icon-user"></i>
 													</span>
 													</label> <label> <span
 														class="block input-icon input-icon-right"> <input
-															type="password" class="span12" placeholder="密码" /> <i
+															type="password"  id="password" name="password" class="span12" placeholder="密码" /> <i
 															class="icon-lock"></i>
 													</span>
 													</label> <label> <span
 														class="block input-icon input-icon-right"> <input
-															type="password" class="span12" placeholder="重复密码" /> <i
+															type="password"  class="span12" placeholder="重复密码" /> <i
 															class="icon-retweet"></i>
 													</span>
-													</label> <label> <input type="checkbox"><span
+													</label> 
+													
+													<label>
+													用户角色: 
+													<input type="radio" id="role" name="role" value="1"><span
+														class="lbl"> 管理员</span>
+													<input type="radio" id="role" name="role" value="2"><span
+														class="lbl"> 用户</span>
+													<input type="radio" id="role" name="role" value="3"><span
+														class="lbl"> 管理员&用户</span>
+													</label>
+													
+													<label> <input type="checkbox"><span
 														class="lbl"> 我接受以下<a href="#">用户协议</a></span>
 													</label>
 
@@ -83,7 +95,7 @@
 														<button type="reset" class="span6 btn btn-small">
 															<i class="icon-refresh"></i> 重置
 														</button>
-														<button onclick="return false;"
+														<button type="submit"
 															class="span6 btn btn-small btn-success">
 															注册 <i class="icon-arrow-right icon-on-right"></i>
 														</button>

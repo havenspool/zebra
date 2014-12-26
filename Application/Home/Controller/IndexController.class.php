@@ -1,11 +1,11 @@
 <?php
 namespace Home\Controller;
 use Think\Controller;
-class IndexController extends Controller {
+class IndexController extends MenuController {
     
 	public function index(){
-       	$Data = M('Data'); // 实例化Data数据模型
-        $this->data = $Data->select();
+		$this->meta_title = '管理首页';
+		$this->display('menu/index');
         $this->display();
     }
 }
