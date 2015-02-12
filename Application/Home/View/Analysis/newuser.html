@@ -1,0 +1,32 @@
+<include file="./header" />
+					<div class="row-fluid">
+						<h3 class="header smaller lighter blue">{$title}</h3>
+						<div class="table-header"></div>
+
+						<table id="table_report"
+							class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="center"><label><input type="checkbox" /><span
+											class="lbl"></span></label></th>
+									<th>日期</th>
+									<th class="hidden-480">新增角色数</th>
+									<th class="hidden-480">新增用户数</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php  
+								foreach ($newusers as $newuser) {
+										echo "<tr><td class='center'><label><input type='checkbox' /><span class='lbl'></span></label></td><td>";
+										echo $newuser['day'];
+										echo "</td><td>";
+										echo $newuser['role'];
+										echo "</td><td>";
+										echo $newuser['user'];
+										echo "</td></tr>";										
+								}
+							?>
+							</tbody>
+						</table>
+					</div>
+<include file="./footer" />

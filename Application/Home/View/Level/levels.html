@@ -1,0 +1,42 @@
+<include file="./header" />
+					<div class="row-fluid">
+						<h3 class="header smaller lighter blue">{$title}</h3>
+						<div class="table-header"></div>
+
+						<table id="table_report"
+							class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="center"><label><input type="checkbox" /><span
+											class="lbl"></span></label></th>
+									<th>英雄等级</th>
+									<th class="hidden-480">将军</th>
+									<th class="hidden-480">鬼武</th>
+									<th class="hidden-480">忍女</th>
+									<th class="hidden-480">全部</th>
+									<th class="hidden-480">百分比(%)</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php  
+								foreach ($levels as $level) {
+										echo "<tr><td class='center'><label><input type='checkbox' /><span class='lbl'></span></label></td><td>";
+										echo $level['level'];
+										echo "</td><td>";
+										echo $level['type1'];
+										echo "</td><td>";
+										echo $level['type2'];
+										echo "</td><td>";
+										echo $level['type3'];
+										echo "</td><td>";
+										echo $level['type'];
+										echo "</td><td>";
+										echo $level['per'];
+										echo "</td></tr>";										
+								}
+							?>
+							</tbody>
+						</table>
+					</div>
+
+<include file="./footer" />

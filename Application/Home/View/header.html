@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>{$title}</title>
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- basic styles -->
+<link href="/zebra/Public/css/bootstrap.min.css" rel="stylesheet" />
+<link href="/zebra/Public/css/bootstrap-responsive.min.css"
+	rel="stylesheet" />
+<link rel="stylesheet" href="/zebra/Public/css/font-awesome.min.css" />
+<!--[if IE 7]>
+		  <link rel="stylesheet" href="css/font-awesome-ie7.min.css" />
+		<![endif]-->
+<!-- page specific plugin styles -->
+
+<!-- ace styles -->
+<link rel="stylesheet" href="/zebra/Public/css/ace.min.css" />
+<link rel="stylesheet" href="/zebra/Public/css/ace-responsive.min.css" />
+<link rel="stylesheet" href="/zebra/Public/css/ace-skins.min.css" />
+<!--[if lt IE 9]>
+		  <link rel="stylesheet" href="css/ace-ie.min.css" />
+		<![endif]-->
+</head>
+<body>
+	<div class="navbar navbar-inverse">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="brand" href="#"><small><i class="icon-leaf"></i>
+						统计后台</small> </a>
+				<ul class="nav ace-nav pull-right">
+					<li class="light-blue user-profile"><a
+						class="user-menu dropdown-toggle" href="#" data-toggle="dropdown">
+							<img alt="Jason's Photo" src="/zebra/Public/avatars/user.jpg"
+							class="nav-user-photo" /> <span id="user_info"> <small>欢迎,</small>
+								{$username}
+						</span> <i class="icon-caret-down"></i>
+					</a>
+						<ul id="user_menu"
+							class="pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-closer">
+							<li><a href="#"><i class="icon-cog"></i> 系统设置</a></li>
+							<li><a href="#"><i class="icon-user"></i> 上传文件</a></li>
+							<li class="divider"></li>
+							<li><a href="#"><i class="icon-off"></i> 退出</a></li>
+						</ul></li>
+				</ul>
+				<!--/.ace-nav-->
+			</div>
+			<!--/.container-fluid-->
+		</div>
+		<!--/.navbar-inner-->
+	</div>
+	<!--/.navbar-->
+
+	<div class="container-fluid" id="main-container">
+		<a href="#" id="menu-toggler"><span></span></a>
+		<!-- menu toggler -->
+		<div id="sidebar">
+			<div id="sidebar-shortcuts">
+				<div id="sidebar-shortcuts-large">
+					<button class="btn btn-small btn-success">
+						<i class="icon-signal"></i>
+					</button>
+					<button class="btn btn-small btn-info">
+						<i class="icon-pencil"></i>
+					</button>
+					<button class="btn btn-small btn-warning">
+						<i class="icon-group"></i>
+					</button>
+					<button class="btn btn-small btn-danger">
+						<i class="icon-cogs"></i>
+					</button>
+				</div>
+
+				<div id="sidebar-shortcuts-mini">
+					<span class="btn btn-success"></span> <span class="btn btn-info"></span>
+					<span class="btn btn-warning"></span> <span class="btn btn-danger"></span>
+				</div>
+			</div>
+			<!-- #sidebar-shortcuts -->
+
+			<ul class="nav nav-list">
+				<?php
+						foreach ($menus as $menu) {
+							if($menu['pid']==1){
+								echo "<li>";
+								echo "<a href='#' class='dropdown-toggle' >";
+								echo "<i class='icon-desktop'></i>";
+								echo "<span>";
+								echo $menu['title'];
+								echo "</span>";
+								echo "<b class='arrow icon-angle-down'></b>";
+								echo "</a>";
+								echo "<ul class='submenu'>";
+								foreach ($menus as $m) {
+									if($m['pid']==$menu['id']){
+										echo "<li><a href='";
+										echo $m['url'];
+										echo "'><i class='icon-double-angle-right'></i>";
+										echo $m['title'];
+										echo "</a></li>";
+									}
+								}
+								echo "</ul>";
+								echo "</li>";
+							}
+						}
+					?>
+
+			</ul>
+			<!--/.nav-list-->
+			<div id="sidebar-collapse">
+				<i class="icon-double-angle-left"></i>
+			</div>
+		</div>
+		<!--/#sidebar-->
+
+
+
+
+		<div id="main-content" class="clearfix">
+			<div id="breadcrumbs">
+				<ul class="breadcrumb">
+					<li><i class="icon-home"></i> <a href="#">Home</a><span
+						class="divider"><i class="icon-angle-right"></i></span></li>
+					<li><a href="#">Other Pages</a> <span class="divider"><i
+							class="icon-angle-right"></i></span></li>
+					<li class="active">Blank Page</li>
+				</ul>
+				<!--.breadcrumb-->
+
+
+
+				<div id="nav-search">
+					<form class="form-search">
+						<span class="input-icon"> <input autocomplete="off"
+							id="nav-search-input" type="text"
+							class="input-small search-query" placeholder="Search ..." /> <i
+							id="nav-search-icon" class="icon-search"></i>
+						</span>
+					</form>
+				</div>
+				<!--#nav-search-->
+			</div>
+			<!--#breadcrumbs-->
+
+
+
+			<div id="page-content" class="clearfix">
+				<div class="row-fluid" id="my-content" name="my-content">
+					<!-- PAGE CONTENT BEGINS HERE -->

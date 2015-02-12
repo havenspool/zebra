@@ -1,0 +1,33 @@
+<include file="./header" />
+					<div class="row-fluid">
+						<h3 class="header smaller lighter blue">{$title}</h3>
+						<div class="table-header"></div>
+
+						<table id="table_report"
+							class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="center"><label><input type="checkbox" /><span
+											class="lbl"></span></label></th>
+									<th>关卡ID</th>
+									<th class="hidden-480">关卡名称</th>
+									<th class="hidden-480">进入人数</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php  
+								foreach ($dungeons as $dungeon) {
+										echo "<tr><td class='center'><label><input type='checkbox' /><span class='lbl'></span></label></td><td>";
+										echo $dungeon['dungeonid'];
+										echo "</td><td>";
+										echo $dungeon['name'];
+										echo "</td><td>";
+										echo $dungeon['count'];
+										echo "</td></tr>";										
+								}
+							?>
+							</tbody>
+						</table>
+					</div>
+
+<include file="./footer" />

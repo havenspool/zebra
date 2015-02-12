@@ -1,0 +1,68 @@
+<include file="./header" />
+					<div class="row-fluid">
+						<h3 class="header smaller lighter blue">{$title}</h3>
+						<div class="table-header"></div>
+
+						<table id="table_report"
+							class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="center"><label><input type="checkbox" /><span
+											class="lbl"></span></label></th>
+									<th>日期</th>
+									<th class="hidden-480">当日新增用户</th>
+									<th class="hidden-480">次日留存(%)</th>
+									<th class="hidden-480">三日留存(%)</th>
+									<th class="hidden-480">四日留存(%)</th>
+									<th class="hidden-480">五日留存(%)</th>
+									<th class="hidden-480">六日留存(%)</th>
+									<th class="hidden-480">七日留存(%)</th>
+									<th class="hidden-480">十四日留存(%)</th>
+									<th class="hidden-480">二十一日留存(%)</th>
+									<th class="hidden-480">三十日留存(%)</th>
+									<th class="hidden-480">六十日留存(%)</th>
+									<th class="hidden-480">九十日留存(%)</th>
+									<th class="hidden-480">一百八十日留存(%)</th>
+									<th class="hidden-480">三百六十日留存(%)</th>
+								</tr>
+							</thead>
+							<tbody>
+												<?php  
+								foreach ($hero_date as $data) {
+										echo "<tr><td class='center'><label><input type='checkbox' /><span class='lbl'></span></label></td><td>";
+										echo date('Y-m-d', $data['date']);
+										echo "</td><td>";
+										echo $data['reg'];
+										echo "</td><td>";
+										echo $data['two'];
+										echo "</td><td>";
+										echo $data['three'];
+										echo "</td><td>";
+										echo $data['four'];
+										echo "</td><td>";
+										echo $data['five'];
+										echo "</td><td>";
+										echo $data['six'];
+										echo "</td><td>";
+										echo $data['seven'];
+										echo "</td><td>";
+										echo $data['fourteen'];
+										echo "</td><td>";
+										echo $data['twentyone'];
+										echo "</td><td>";
+										echo $data['thirty'];
+										echo "</td><td>";
+										echo $data['sixty'];
+										echo "</td><td>";
+										echo $data['ninety'];
+										echo "</td><td>";
+										echo $data['hund180'];
+										echo "</td><td>";
+										echo $data['hund360'];
+										echo "</td></tr>";										
+								}
+							?>
+							</tbody>
+						</table>
+					</div>
+<include file="./footer" />

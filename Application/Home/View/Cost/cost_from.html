@@ -1,0 +1,54 @@
+<include file="./header" />
+					<div class="row-fluid">
+						<h3 class="header smaller lighter blue">{$title}</h3>
+						<div class="table-header"></div>
+
+						<table id="table_report"
+							class="table table-striped table-bordered table-hover">
+							<thead>
+								<tr>
+									<th class="center"><label><input type="checkbox" /><span
+											class="lbl"></span></label></th>
+									<th>英雄ID</th>
+									<th class="hidden-480">类型</th>
+									<th class="hidden-480">数额</th>
+									<th class="hidden-480">增加/消耗</th>
+									<th class="hidden-480">方式</th>
+									<th class="hidden-480">时间</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+												<?php  
+								foreach ($heroes_uses as $use) {
+										echo "<tr><td class='center'><label><input type='checkbox' /><span class='lbl'></span></label></td><td>";
+										echo $use['heroid'];
+										echo "</td><td>";
+										if($use['costtype']==1){
+											echo "金币";
+										}else if($use['costtype']==2){
+											echo "银币";
+										}
+										else if($use['costtype']==3){
+											echo "武神积分";
+										}
+										echo "</td><td>";
+										echo $use['cost'];
+										echo "</td><td>";
+										if($use['counttype']==0){
+											echo "增加";
+										}else if($use['counttype']==1){
+											echo "消耗";
+										}
+										echo "</td><td>";
+										echo $use['type'];
+										echo "</td><td>";
+										echo date('Y-m-d H:i:s', $use['time']);
+										echo "</td></tr>";										
+								}
+							?>
+							</tbody>
+						</table>
+					</div>
+
+<include file="./footer" />
