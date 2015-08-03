@@ -1,0 +1,64 @@
+<include file="./header" />
+
+<form class="form-horizontal" name="add_server" id="add_server" action="add_server" method="post" >
+    <div class="row-fluid">
+        <label>增加游戏服</label>
+        <div class="control-group">
+            <label class="control-label" for="server_id">游戏服ID</label>
+            <div class="controls">
+                <input type="number" id="server_id" name="server_id" placeholder="游戏服ID">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="server_name">游戏服名称</label>
+            <div class="controls">
+                <input type="text" id="server_name" name="server_name" placeholder="服务器名称">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="host">IP</label>
+            <div class="controls">
+                <input type="text" id="host" name="host" placeholder="IP">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="port">端口</label>
+            <div class="controls">
+                <input type="number" id="port" name="port" placeholder="端口">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="channel">平台ID</label>
+            <div class="controls">
+                <input type="number" id="channel" name="channel" placeholder="平台ID">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="channel_name">平台名称</label>
+            <div class="controls">
+                <input type="text" id="channel_name" name="channel_name" placeholder="平台名称">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="db_select">数据库</label>
+            <div class="controls">
+                <select id="db_select" name="db_select">
+                    <?php
+                        foreach($dbs as $db){
+                            echo "<option value=".$db['id'].">".$db['id']."</option>";
+                        }
+                    ?>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <button id="submit_btn" name="submit_btn"  class="btn btn-small btn-success">增加游戏服</button>
+        <button id="submit_btn1" name="submit_btn1" value="10" class="btn btn-small btn-success">
+            <a href="/zebra/Home/Server/choose_server">选择游戏服</a>
+        </button>
+    </div>
+</form>
+<include file="./footer" />

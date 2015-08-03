@@ -1,0 +1,36 @@
+<include file="./header" />
+
+<form name="punish_query" id="punish_query" action="punish_query" method="post">
+    <div class="row-fluid">
+        <label for="form-field-8">英雄UID</label>
+        <textarea class="span6" id="punish_heroids" name="punish_heroids" placeholder="英雄UID，多个UID用;隔开"></textarea>
+    </div>
+
+    <div class="row-fluid">
+        <button id="punish_query_btn" name="punish_query_btn" class="btn btn-small btn-success">查找</button>
+    </div>
+
+    <div class="row-fluid">
+        <label class="control-label">惩罚记录</label>
+        <?php
+			foreach($punish_list as $punish){
+				echo "<p>";
+                echo "惩罚英雄:".$punish['hero_id']." 惩罚类型:";
+                if($punish['flog']==0&&$punish['fbc']==0)
+                    echo "无惩罚;";
+                else{
+                    if($punish['flog']==1){ echo " 禁言";
+                        if($punish['flogTime']!=0) echo " 时长:".$punish['flogTime']."秒;";
+                    }else if($punish['flog']==2) echo " 永久禁言;";
+
+                    if($punish['fbc']==1){ echo " 封号";
+                        if($punish['fbcTime']!=0) echo " 时长:".$punish['fbcTime']."秒;";
+                    }else if($punish['fbc']==2) echo " 永久封号;";
+
+                }
+                echo "</p>";
+        }
+        ?>
+    </div>
+</form>
+<include file="./footer" />

@@ -1,0 +1,28 @@
+<include file="./header" />
+
+<script type="text/javascript">
+</script>
+    <div class="row-fluid">
+        <a href="/zebra/Home/customer/send_mail">发送邮件</a>
+    </div>
+
+    <div class="row-fluid">
+        <label class="control-label">奖励记录</label>
+        <?php
+			foreach($send_mail_list as $send_mail){
+				echo "<p>";
+        echo $send_mail['time'].":";
+        if($send_mail['hero_id']==-1) echo " 全服";
+        else echo " 英雄UID:".$send_mail['hero_id'];
+        if($send_mail['mid1']!="") echo ":".$send_mail['mid1'];
+        if($send_mail['mid2']!="") echo ":".$send_mail['mid2'];
+        if($send_mail['mid3']!="") echo ":".$send_mail['mid3'];
+        if($send_mail['mid4']!="") echo ":".$send_mail['mid4'];
+        if($send_mail['mid5']!="") echo ":".$send_mail['mid5'];
+        echo ";";
+        echo "</p>";
+        }
+        ?>
+    </div>
+
+<include file="./footer" />

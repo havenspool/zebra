@@ -1,0 +1,58 @@
+<include file="./header" />
+<form class="form-horizontal" name="account_list" id="account_list" action="account_list" method="post" >
+    <div class="row-fluid">
+        <div class="table-header">
+            服务器列表
+        </div>
+        <table id="table_report" class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="hidden-480">序号</th>
+                <th class="hidden-480">用户名</th>
+                <th class="hidden-480">注册邮箱</th>
+                <th class="hidden-480">管理权限</th>
+                <th class="hidden-480">登陆次数</th>
+                <th class="hidden-480">注册IP</th>
+                <th class="hidden-480">注册时间</th>
+                <th class="hidden-480">最后登陆IP</th>
+                <th class="hidden-480">最后登陆时间</th>
+                <th class="hidden-480">状态</th>
+                <th class="hidden-480">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            $index=1;
+            foreach($users as $user){
+                    echo "<tr><td class='hidden-480'>".$index;
+                    echo "<td class='hidden-480'>".$user['username'];
+                    echo "</td><td class='hidden-480'>".$user['email'];
+                    echo "</td><td class='hidden-480'>".$user['roleid'];
+                    echo "</td><td class='hidden-480'>".$user['login'];
+                    echo "</td><td class='hidden-480'>".$user['reg_ip'];
+                    echo "</td><td class='hidden-480'>".$user['reg_time'];
+                    echo "</td><td class='hidden-480'>".$user['last_login_ip'];
+                    echo "</td><td class='hidden-480'>".$user['last_login_time'];
+                    echo "</td><td class='hidden-480'>".$user['status'];
+                    echo "</td><td class='hidden-480'><a href='/zebra/Home/Account/modify_account?uid=".$user['uid']."'>修改</a> | ";
+                    echo "<a href='/zebra/Home/Account/delete_account?uid=".$user['uid']."'>删除</a>";
+                    echo "</td></tr>";
+                    $index++;
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+    <script type="text/javascript">
+    </script>
+
+    <div class="row-fluid">
+        <button id="submit_btn" name="submit_btn" value={$index} class="btn btn-small btn-success">保存选择
+            <!-- <a href="/zebra/Home/Server/choose_server?save=1&index={$index}">保存选择</a> -->
+        </button>
+        <button id="submit_btn1" name="submit_btn1" class="btn btn-small btn-success">
+            <a href="/zebra/Home/Account/add_account">新增账号</a>
+        </button>
+    </div>
+</form>
+<include file="./footer" />

@@ -1,0 +1,261 @@
+<include file="./header" />
+<script type="text/javascript">
+$(function() {
+    new Highcharts.Chart({
+        chart: {
+            type: 'pie',
+            renderTo: 'chart_pie1',  //饼状图关联html元素id值
+            options3d: {
+                enabled: true,
+                alpha: 45
+            }
+        },
+        title: {
+            text: '货币来源各类型占比'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: '数额',
+            data: [<?php
+                    foreach ($source_types as $data){
+                        echo "['".$data['name']."',".$data['num']."],";
+                    }
+                ?>]
+        },]
+    });
+
+    new Highcharts.Chart({
+        chart: {
+            type: 'pie',
+            renderTo: 'chart_pie2',  //饼状图关联html元素id值
+            options3d: {
+                enabled: true,
+                alpha: 45
+            }
+        },
+        title: {
+            text: '货币消耗各类型占比'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: '数额',
+            data: [<?php
+                    foreach ($use_types as $data){
+                        echo "['".$data['name']."',".$data['num']."],";
+                    }
+                    ?>]
+        },]
+    });
+
+    new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart_pie3',  //饼状图关联html元素id值
+            //defaultSeriesType: 'pie', //默认图表类型为饼状图
+            plotBackgroundColor: 'white',//背景颜色
+            //plotBackgroundColor: '#ffc',  //设置图表区背景色
+            type: 'column',
+            plotShadow: true   //设置阴影
+        },
+        title: {
+            text: '不同日期来源与消耗',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: [<?php
+                            foreach ($dates as $data){
+                                echo "'".date("Y-m-d ", $data['date'])."',";
+                            }
+                        ?>]
+        },
+        yAxis: {
+            title: {
+                text: '数额'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        series: [{
+            type: 'column',
+            name: '来源',
+            data: [<?php
+                    foreach ($dates as $data){
+                        echo $data['source'].",";
+                    }
+                    ?>]
+        }, {
+            type: 'column',
+            name: '消耗',
+            data: [<?php
+                    foreach ($dates as $data){
+                        echo $data['use'].",";
+                    }
+                    ?>]
+        }, {
+            type: 'spline',
+            name: '对比',
+            data: [<?php
+                    foreach ($dates as $data){
+                        echo $data['sum'].",";
+                    }
+                    ?>],
+            marker: {
+                lineWidth: 2,
+                lineColor: Highcharts.getOptions().colors[3],
+                fillColor: 'white'
+            }
+        }]
+    });
+
+    new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart_pie4',  //饼状图关联html元素id值
+            //defaultSeriesType: 'pie', //默认图表类型为饼状图
+            plotBackgroundColor: 'white',//背景颜色
+            //plotBackgroundColor: '#ffc',  //设置图表区背景色
+            type: 'column',
+            plotShadow: true   //设置阴影
+        },
+        title: {
+            text: '不同时间段来源与消耗',
+            x: -20 //center
+        },
+        xAxis: {
+            categories: [<?php
+                        foreach ($periods as $data){
+                            echo "'".$data['date']."~".($data['date']+1)."',";
+                        }
+                        ?>]
+        },
+        yAxis: {
+            title: {
+                text: '数额'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        series: [{
+            type: 'column',
+            name: '来源',
+            data: [<?php
+                    foreach ($periods as $data){
+            echo $data['source'].",";
+        }
+        ?>]
+        }, {
+            type: 'column',
+                    name: '消耗',
+                    data: [<?php
+                    foreach ($periods as $data){
+                echo $data['use'].",";
+            }
+            ?>]
+        }, {
+            type: 'spline',
+                    name: '对比',
+                    data: [<?php
+                    foreach ($periods as $data){
+                echo $data['sum'].",";
+            }
+            ?>],
+            marker: {
+                lineWidth: 2,
+                        lineColor: Highcharts.getOptions().colors[3],
+                        fillColor: 'white'
+            }
+        }]
+    });
+
+});
+function check(){
+    var $start_date = $('#start_date').val();
+    var $end_date = $('#end_date').val();
+
+    if ($start_date == "" && $end_date == "") {
+        alert('查询日期不能全为空,请检查输入!');
+        return false;
+    }
+    $('#currency_analysis').submit();
+}
+</script>
+<div class="row-fluid">
+    <h3 class="header smaller lighter blue">{$title}</h3>
+
+    <form name="currency_analysis" id="currency_analysis" action="currency_analysis" method="post">
+        <div class="controls">
+            <label>平台&游戏服:
+                <?php
+                $index=0;
+                foreach ($servers as $server) {
+                    echo "<input id='checkbox[]"."' name='checkbox[]"."' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."&".$server['server_name']."</span>";
+                    $index++;
+                }
+                ?>
+            </label>
+        </div>
+
+        <div class="row-fluid">
+            <div class="control-group">
+                <div class="controls">
+                    <label>
+                        <label class="control-label">货币类型:
+                            <input id="currency_radio" name="currency_radio" class="ace-checkbox-2" type="radio" value="1" <?php if($type==1) echo("checked");?> ><span class="lbl">金币</span>
+                            <input id="currency_radio" name="currency_radio" class="ace-checkbox-2" type="radio" value="2" <?php if($type==2) echo("checked");?> ><span class="lbl">银币</span>
+                        </label>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row-fluid input-append date">
+            <input type="button" class="btn btn-small" value="开始日期"/>
+            <input class="span2" id="start_date"  name="start_date" data-format="yyyy-MM-dd" type="date" <?php if($start_date!=0) echo "value='".$start_date."'";?> placeholder="开始日期"/>
+            <input type="button" class="btn btn-small" value="结束日期"/>
+            <input class="span2" id="end_date"  name="end_date" data-format="yyyy-MM-dd" type="date" <?php if($end_date!=0) echo "value='".$end_date."'";?> placeholder="结束日期"/>
+            <button class="btn btn-small" type="reset">重置</button>
+            <input type="button" class="btn btn-small" value="查询" onclick="check();"/>
+        </div>
+    </form>
+    <div class="row-fluid">
+        <div class="span6">
+            <div id="chart_pie1"></div>
+        </div>
+        <div class="span6">
+            <div id="chart_pie2"></div>
+        </div>
+    </div>
+    <div id="chart_pie3"></div>
+    <div id="chart_pie4"></div>
+</div>
+<include file="./footer" />

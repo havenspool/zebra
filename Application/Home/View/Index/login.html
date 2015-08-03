@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>登陆</title>
+<title>{$title}</title>
 <meta name="description" content="User login page" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <!-- basic styles -->
@@ -50,8 +50,8 @@
 											</h4>
 
 											<div class="space-6"></div>
-
-											<form>
+											
+											<form class="login-form" name="login" id="login" action="login" method="post">
 												<fieldset>
 													<label> <span
 														class="block input-icon input-icon-right"> <input
@@ -69,7 +69,7 @@
 														<label class="span8"> <input type="checkbox"><span
 															class="lbl">记住我</span>
 														</label>
-														<button onclick="return false;"
+														<button onclick="login();"
 															class="span4 btn btn-small btn-primary">
 															<i class="icon-key"></i> 登陆
 														</button>
@@ -233,6 +233,10 @@
 		function show_box(id) {
 			$('.widget-box.visible').removeClass('visible');
 			$('#' + id).addClass('visible');
+		}
+		
+		function login(){
+			$('#login').submit();
 		}
 	</script>
 </body>

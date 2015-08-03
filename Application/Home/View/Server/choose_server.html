@@ -1,0 +1,59 @@
+<include file="./header" />
+<form class="form-horizontal" name="choose_server" id="choose_server" action="choose_server" method="post" >
+<div class="row-fluid">
+    <div class="table-header">
+        服务器列表
+    </div>
+    <table id="table_report" class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="center">
+                <label><input type="checkbox" /><span class="lbl"></span></label>
+            </th>
+            <th class="hidden-480">序号</th>
+            <th class="hidden-480">游戏服ID</th>
+            <th class="hidden-480">游戏服名称</th>
+            <th class="hidden-480">IP</th>
+            <th class="hidden-480">端口</th>
+            <th class="hidden-480">平台ID</th>
+            <th class="hidden-480">平台名称</th>
+            <th class="hidden-480">数据库ID</th>
+            <th class="hidden-480">操作</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <?php
+        $index=1;
+        foreach($servers as $server){
+        	echo "<tr><td class='center'><label><input ".$server['check']." id='checkbox".$index."' name='checkbox".$index."' value='".$server['id']."' type='checkbox' class='ace-checkbox-2'/><span class='lbl'></span></label></td>";
+            echo "<td class='hidden-480'>".$index;
+            echo "<td class='hidden-480'>".$server['server_id'];
+            echo "</td><td class='hidden-480'>".$server['server_name'];
+            echo "</td><td class='hidden-480'>".$server['host'];
+            echo "</td><td class='hidden-480'>".$server['port'];
+            echo "</td><td class='hidden-480'>".$server['channel'];
+            echo "</td><td class='hidden-480'>".$server['channel_name'];
+            echo "</td><td class='hidden-480'>".$server['db_id'];
+            echo "</td><td class='hidden-480'><a href='/zebra/Home/Server/modify_server?id=".$server['id']."'>修改</a> | ";
+            echo "<a href='/zebra/Home/Server/delete_server?id=".$server['id']."'>删除</a>";
+            echo "</td></tr>";
+        $index++;
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+</script>
+
+<div class="row-fluid">
+    <button id="submit_btn" name="submit_btn" value={$index} class="btn btn-small btn-success">保存选择
+       <!-- <a href="/zebra/Home/Server/choose_server?save=1&index={$index}">保存选择</a> -->
+    </button>
+    <button id="submit_btn1" name="submit_btn1" class="btn btn-small btn-success">
+        <a href="/zebra/Home/Server/add_server">增加游戏服</a>
+    </button>
+</div>
+</form>
+<include file="./footer" />

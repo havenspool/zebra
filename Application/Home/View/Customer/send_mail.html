@@ -1,0 +1,37 @@
+<include file="./header" />
+
+<script type="text/javascript">
+
+</script>
+
+<form name="send_mail" id="send_mail" action="send_mail" method="post">
+    <div class="row-fluid">
+        <label for="form-field-8">英雄UID</label>
+        <textarea class="span6" id="send_mail_heroids" name="send_mail_heroids" placeholder="英雄UID，多个UID用;隔开，全服奖励为-1"></textarea>
+    </div>
+
+    <div class="row-fluid">
+        <label for="form-field-8">奖励物品ID</label>
+        <textarea class="span6" id="send_mail_mids" name="send_mail_mids" placeholder="奖励物品ID，多个奖励物品ID用;隔开，最多五个物品"></textarea>
+    </div>
+
+    <div class="row-fluid">
+        <label for="form-field-8">奖励物品数量</label>
+        <textarea class="span6" id="send_mail_nums" name="send_mail_nums" placeholder="奖励物品数量，多个奖励物品数量用;隔开"></textarea>
+    </div>
+    <div class="row-fluid">
+        <label for="form-field-8">邮件标题</label>
+        <textarea class="span6" id="send_mail_title" name="send_mail_title" placeholder="邮件标题"></textarea>
+    </div>
+    <div class="row-fluid">
+        <label for="form-field-8">邮件内容</label>
+        <textarea class="span6" id="send_mail_content" name="send_mail_content" placeholder="邮件内容"></textarea>
+    </div>
+
+    <div class="row-fluid">
+        <button id="send_mail_submit_btn" name="send_mail_submit_btn" class="btn btn-small btn-success">发送邮件</button>
+        <button id="send_mail_his_btn" name="send_mail_his_btn" class="btn btn-small btn-success"><a href="/zebra/Home/customer/success_send_mail">发送记录</a></button>
+    </div>
+</form>
+
+<include file="./footer" />

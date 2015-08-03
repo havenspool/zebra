@@ -1,0 +1,44 @@
+<include file="./header" />
+<div class="row-fluid">
+    <div class="table-header">
+        关卡统计 <a href="/zebra/Home/RegAndOnline/dungeon_statistic">刷新</a>
+    </div>
+    <table id="table_report1" class="table table-striped table-bordered table-hover">
+        <thead>
+        <tr>
+            <th class="hidden-480">序号</th>
+            <th class="hidden-480">关卡ID</th>
+            <th class="hidden-480">关卡名称</th>
+            <th class="hidden-480">进入角色数</th>
+            <th class="hidden-480">完成角色数</th>
+            <th class="hidden-480">完成角色比(%)</th>
+            <th class="hidden-480">进入次数</th>
+            <th class="hidden-480">完成次数</th>
+            <th class="hidden-480">完成次数比(%)</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $index=1;
+        foreach($dungeons_data as $data){
+            echo "<tr><td class='hidden-480'>".$index;
+            echo "</td><td class='hidden-480'>".$data['dungeonid'];
+            echo "</td><td class='hidden-480'>".$data['name'];
+            echo "</td><td class='hidden-480'>".round($data['enter_count']);
+            echo "</td><td class='hidden-480'>".round($data['all_count']);
+            echo "</td><td class='hidden-480'>".round(($data['all_count']/$data['enter_count'])*100,2);
+            echo "</td><td class='hidden-480'>".round($data['enter_times']);
+            echo "</td><td class='hidden-480'>".round($data['all_times']);
+            echo "</td><td class='hidden-480'>".round(($data['all_times']/$data['enter_times'])*100,2);
+            echo "</td></tr>";
+            $index++;
+        }
+        ?>
+        </tbody>
+    </table>
+</div>
+</div>
+<script type="text/javascript">
+    var ex1 = new tableSort('table_report1',1,2,999,'','','');
+</script>
+<include file="./footer" />

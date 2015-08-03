@@ -1,0 +1,58 @@
+<include file="./header" />
+
+<script type="text/javascript">
+</script>
+
+<form name="send_board" id="send_board" action="send_board" method="post">
+    <div class="row-fluid">
+        <label for="form-field-8">公告内容</label>
+        <textarea class="span6" id="send_board_content" name="send_board_content" placeholder="公告内容"></textarea>
+    </div>
+
+    <div class="row-fluid">
+        <label for="form-field-8">发布时间</label>
+        <div class="row-fluid input-append date">
+            <label>
+                <input type="button" class="btn btn-small" value="开始时间"/>
+                <input class="span2" id="start_date"  name="start_date" type="date" placeholder="开始日期"/>
+                  <input id="start_hour" name="start_hour" type="number" class="input-mini" placeholder="时"/>
+                  <input id="start_min" name="start_min" type="number" class="input-mini" placeholder="分"/>
+                  <input id="start_sec" name="start_sec" type="number" class="input-mini" placeholder="秒"/>
+            </label><label>
+                <input type="button" class="btn btn-small" value="结束时间"/>
+                <input class="span2" id="end_date"  name="end_date" type="date" placeholder="结束日期"/>
+                  <input id="end_hour" name="end_hour" type="number" class="input-mini" placeholder="时"/>
+                  <input id="end_min" name="end_min" type="number" class="input-mini" placeholder="分"/>
+                  <input id="end_sec" name="end_sec" type="number" class="input-mini" placeholder="秒"/>
+            </label>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <label for="form-field-8">发布频率</label>
+        <label>
+            <input id="fqc_day" name="fqc_day" type="number" class="input-mini" placeholder="天"/>
+            <input id="fqc_hour" name="fqc_hour" type="number" class="input-mini" placeholder="时"/>
+            <input id="fqc_min" name="fqc_min" type="number" class="input-mini" placeholder="分"/>
+            <input id="fqc_sec" name="fqc_sec" type="number" class="input-mini" placeholder="秒"/>
+        </label>
+    </div>
+
+    <div class="row-fluid">
+        <button id="send_board_submit_btn" name="send_board_submit_btn" class="btn btn-small btn-success">发布公告</button>
+        <button id="send_board_his_btn" name="send_board_his_btn" class="btn btn-small btn-success"><a href="/zebra/Home/Operation/send_board_online">实时发布</a></button>
+        <button id="send_board_his_btn" name="send_board_his_btn" class="btn btn-small btn-success"><a href="/zebra/Home/Operation/send_board_list">发布记录</a></button>
+    </div>
+
+    <?php
+        echo "<p>";
+        echo $send_board_ing;
+        echo "</p>";
+        echo "<p>";
+        echo $send_board_content;
+        echo "</p>";
+
+    ?>
+</form>
+
+<include file="./footer" />

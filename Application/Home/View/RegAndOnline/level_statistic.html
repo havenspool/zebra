@@ -1,0 +1,176 @@
+<include file="./header" />
+<script type="text/javascript">
+$(function() {
+	new Highcharts.Chart({
+        chart: {
+            renderTo: 'chart_pie',  //饼状图关联html元素id值
+			//defaultSeriesType: 'pie', //默认图表类型为饼状图
+			plotBackgroundColor: 'white',//背景颜色  
+			//plotBackgroundColor: '#ffc',  //设置图表区背景色
+			type: 'column',
+            plotShadow: true   //设置阴影
+        },
+        title: {
+            text: '',
+            x: -20 //center
+        },
+        subtitle: {
+            text: '',
+            x: -20
+        },
+        xAxis: {
+            categories: [
+			<?php  
+					foreach ($levels as $level) {
+					echo "'".$level['level']."',";
+			}?>
+                         ]
+        },
+        yAxis: {
+            title: {
+                text: '百分比(%)'
+            },
+            plotLines: [{
+                value: 0,
+                width: 1,
+                color: '#808080'
+            }]
+        },
+        tooltip: {
+            valueSuffix: '%'
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle',
+            borderWidth: 0
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: true
+            }
+        },
+        series: [{
+            name: '将军',
+            data: [<?php  
+            		foreach ($levels as $level) {
+        		echo round ( (100*$level['type1']) / $total, 2 ).",";
+        }?>]
+        }, {
+            name: '鬼武',
+            data: [<?php  
+            		foreach ($levels as $level) {
+        		echo round ( (100*$level['type2']) / $total, 2 ).",";
+        }?>]
+        }, {
+            name: '忍女',
+            data: [<?php  
+            		foreach ($levels as $level) {
+        		echo  round ( (100*$level['type3']) / $total, 2 ).",";
+        }?>]
+        }, {
+            name: '全部',
+            data: [<?php  
+            		foreach ($levels as $level) {
+        		echo round ( (100*$level['type']) / $total, 2 ).",";
+        }?>]
+        }]
+    });
+});
+
+function check(){
+	var $check_date = $('#check_date').val();
+
+	if ($check_date == "") {
+		alert('查询日期不能全为空,请检查输入!');
+		return false;
+	}
+	$('#level_statistic').submit();
+}
+
+</script>
+<div class="row-fluid">
+	<h3 class="header smaller lighter blue">{$title}</h3>
+
+	<form name="level_statistic" id="level_statistic" action="level_statistic" method="post">
+		<div class="controls">
+			<label>平台&游戏服:
+				<?php
+					$index=0;
+					foreach ($servers as $server) {
+						echo "<input id='checkbox[]"."' name='checkbox[]"."' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."&".$server['server_name']."</span>";
+						$index++;
+					}
+				?>
+			</label>
+		</div>
+
+		<div class="row-fluid input-append date">
+				<input type="button" class="btn btn-small" value="查询日期"/>
+				<input class="span2" id="check_date"  name="check_date" data-format="yyyy-MM-dd" type="date" <?php if($check_date!=0) echo "value='".$check_date."'";?> placeholder="查询日期" />
+				<button class="btn btn-small" type="reset">重置</button>
+				<input type="button" class="btn btn-small" value="查询" onclick="check();"/>
+		</div>
+	</form>
+
+	<div id="chart_pie"></div>
+
+	<div class="table-header"></div>
+
+	<table id="table_report"
+		class="table table-striped table-bordered table-hover">
+		<thead>
+			<tr>
+				<th class="center">日期</th>
+				<th class="center">英雄等级</th>
+				<th class="center">将军</th>
+				<th class="center">鬼武</th>
+				<th class="center">忍女</th>
+				<th class="center">全部</th>
+				<th class="center">百分比(%)</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php
+			foreach ($levels as $level) {
+					echo "<tr><td class='center'>";
+					echo date('Y-m-d', $level['date']);
+					echo "</td><td class='center'>";
+					echo $level['level'];
+					echo "</td><td class='center'>";
+					echo $level['type1'];
+					echo "</td><td class='center'>";
+					echo $level['type2'];
+					echo "</td><td class='center'>";
+					echo $level['type3'];
+					echo "</td><td class='center'>";
+					echo $level['type'];
+					echo "</td><td class='center'>";
+					echo $level['per'];
+					echo "</td></tr>";
+			}
+					echo "<tr><td class='center'>";
+					echo "</td><td class='center'>";
+					echo "共";
+					echo "</td><td class='center'>";
+					echo $level_all['type1'];
+					echo "</td><td class='center'>";
+					echo $level_all['type2'];
+					echo "</td><td class='center'>";
+					echo $level_all['type3'];
+					echo "</td><td class='center'>";
+					echo $level_all['type'];
+					echo "</td><td class='center'>";
+					echo $level_all['per'];
+					echo "</td></tr>";
+		?>
+		</tbody>
+	</table>
+</div>
+<script type="text/javascript">
+	var ex1 = new tableSort('table_report',1,2,999,'','','');
+</script>
+<include file="./footer" />

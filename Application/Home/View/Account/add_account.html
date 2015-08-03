@@ -1,0 +1,90 @@
+<include file="./header" />
+<script type="text/javascript">
+function check(){
+    var $username = $('#username').val();
+    var $pwd = $('#pwd').val();
+    var $comfirm_pwd = $('#comfirm_pwd').val();
+
+    if($username.length<=0){
+        alert("请输入用户名！");
+        return false;
+    }
+    if($pwd.length<=0){
+        alert("请输入密码！");
+        return false;
+    }
+    if($pwd.length<5){
+        alert("密码必须大于5位，请重新输入！");
+        return false;
+    }
+
+    if($pwd.length!=$comfirm_pwd.length){
+        alert("两次输入的密码不一致，请重新输入！");
+        return false;
+    }
+
+    if (!($pwd==$comfirm_pwd && $comfirm_pwd!='')) {
+        alert('两次输入的密码不一致，请重新输入！');
+        return false;
+    }
+    $('#add_account').submit();
+}
+</script>
+<form class="form-horizontal" name="add_account" id="add_account" action="add_account" method="post" >
+    <div class="row-fluid">
+        <div class="control-group">
+            <label class="control-label" for="username">用户名</label>
+            <div class="controls">
+                <input type="text" id="username" name="username" placeholder="昵称">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="pwd">密码</label>
+            <div class="controls">
+                <input type="password" id="pwd" name="pwd" placeholder="密码">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="comfirm_pwd">确认密码</label>
+            <div class="controls">
+                <input type="password" id="comfirm_pwd" name="comfirm_pwd" placeholder="确认密码">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="mail">邮箱</label>
+            <div class="controls">
+                <input type="text" id="mail" name="mail" placeholder="邮箱">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="role_select">权限</label>
+            <div class="controls">
+                <select id="role_select" name="role_select">
+                    <?php
+                        foreach($roles as $role){
+                            echo "<option value=".$role['id'].">".$role['desc']."</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="status_select">状态</label>
+            <div class="controls">
+                <select id="status_select" name="status_select">
+                    <option value=0>可登陆</option>
+                    <option value=1>禁止登陆</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <button id="submit_btn" name="submit_btn"  class="btn btn-small btn-success" onclick="check();">新增账号</button>
+        <button id="submit_btn1" name="submit_btn1" value="10" class="btn btn-small btn-success">
+            <a href="/zebra/Home/Account/account_list">账号列表</a>
+        </button>
+    </div>
+</form>
+<include file="./footer" />
