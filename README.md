@@ -40,3 +40,4 @@ ThinkPHP遵循Apache2开源协议发布。Apache Licence是著名的非盈利开
 
 //访问路径
 http://localhost/zebra/Home/Form/index
+update 2015-08-04 in home
