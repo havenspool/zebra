@@ -8,8 +8,11 @@ class HomeController extends LayoutController {
 
     public function daily() {
         $this->menu ();
-        $this->assign ( 'title', '每日报表' );
-        $this->assign ( 'url', '/zebra/Home/Home/daily' );
+        $url='/zebra/Home/Home/daily';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $check_date = $_POST['check_date'];
         if($_POST['check_date']==""){

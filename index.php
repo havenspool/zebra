@@ -23,7 +23,6 @@ define('BUILD_DIR_SECURE', false);
  */
 define ( 'RUNTIME_PATH', './Runtime/' );
 
-
 // 开启调试模式 建议开发阶段开启 部署阶段注释或者设为false
 define('APP_DEBUG',True);
 

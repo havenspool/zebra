@@ -84,7 +84,7 @@ class LayoutController extends Controller {
 
 		//$DBuser = M('Menu');
 		//$menus = $DBuser->select();
-		$this->assign('menus',$menus);
+//		$this->assign('menus',$menus);
 
 		$this->assign('menus',$menus);
 		$this->assign('admin',$admin);
@@ -102,7 +102,17 @@ class LayoutController extends Controller {
 // 		$admin = session('admin');
 // 		$username=$admin['username'];
 	}
-	
+
+	public function get_menu_from_url($url){
+		$username=$this->getUsername();
+		$menus= S('menus_'.$username);
+		foreach($menus as $menu){
+			if(md5($menu['url'])==md5($url)){
+				return $menu;
+			}
+		}
+	}
+
 	public function getType($type) {
 		if($type==1){
 			return "将军";

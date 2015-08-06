@@ -8,8 +8,11 @@ class ServerController extends LayoutController {
 
     public function add_server() {
         $this->menu ();
-        $this->assign ( 'title', '增加服务器' );
-        $this->assign ( 'url', '/zebra/Home/Server/add_server' );
+        $url='/zebra/Home/Server/add_server';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $flag=true;
         $server_id = $_POST['server_id'];
@@ -42,7 +45,9 @@ class ServerController extends LayoutController {
     public function modify_server() {
         $this->menu ();
         $this->assign ( 'title', '修改服务器' );
-        $this->assign ( 'url', '/zebra/Home/Server/modify_server' );
+        $url='/zebra/Home/Server/modify_server';
+        $this->assign ( 'active_open_id', 12);
+        $this->assign ( 'url', $url);
 
         $flag=true;
         $id = $_GET['id'];
@@ -90,7 +95,9 @@ class ServerController extends LayoutController {
     public function delete_server() {
         $this->menu ();
         $this->assign ( 'title', '删除服务器' );
-        $this->assign ( 'url', '/zebra/Home/Server/delete_server' );
+        $url='/zebra/Home/Server/delete_server';
+        $this->assign ( 'active_open_id', 12);
+        $this->assign ( 'url', $url);
 
         $flag=true;
         $id = $_GET['id'];
@@ -107,8 +114,11 @@ class ServerController extends LayoutController {
 
     public function choose_server() {
         $this->menu ();
-        $this->assign ( 'title', '选择服务器' );
-        $this->assign ( 'url', '/zebra/Home/Server/choose_server' );
+        $url='/zebra/Home/Server/choose_server';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $save=false;
         $value = $_POST['submit_btn'];

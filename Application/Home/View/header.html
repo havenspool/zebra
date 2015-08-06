@@ -113,7 +113,9 @@
 				<?php
 						foreach ($menus as $menu) {
 							if($menu['pid']==1){
-								echo "<li>";
+								echo "<li ";
+								if($menu['id']==$active_open_id) echo " class='active open' ";
+								echo " >";
 								echo "<a href='#' class='dropdown-toggle' >";
 								echo "<i class='icon-desktop'></i>";
 								echo "<span>";

@@ -8,8 +8,11 @@ class CustomController extends LayoutController {
 
 	public function punish_relieve() {
 		$this->menu ();
-		$this->assign ( 'title', '惩罚英雄' );
-		$this->assign ( 'url', '/zebra/Home/Custom/punish_relieve' );
+		$url='/zebra/Home/Custom/punish_relieve';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$heroids = $_POST['punish_heroids'];
 
@@ -123,8 +126,11 @@ class CustomController extends LayoutController {
 
 	public function punish_query() {
 		$this->menu ();
-		$this->assign ( 'title', '惩罚查询' );
-		$this->assign ( 'url', '/zebra/Home/Custom/punish_query' );
+		$url='/zebra/Home/Custom/punish_query';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$heroids = $_POST['punish_heroids'];
 
@@ -152,8 +158,11 @@ class CustomController extends LayoutController {
 
 	public function delete_hero() {
 		$this->menu ();
-		$this->assign ( 'title', '删除英雄' );
-		$this->assign ( 'url', '/zebra/Home/Custom/delete_hero' );
+		$url='/zebra/Home/Custom/delete_hero';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$heroids = $_POST['delete_hero_heroids'];
 
@@ -180,8 +189,12 @@ class CustomController extends LayoutController {
 
     public function recharge_export() {
         $this->menu ();
-        $this->assign ( 'title', '充值导出' );
-		$this->assign ( 'url', '/zebra/Home/Custom/recharge_export' );
+		$url='/zebra/Home/Custom/recharge_export';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
+
         $recharge=array();
 
         $this->assign ( 'recharge', $recharge);

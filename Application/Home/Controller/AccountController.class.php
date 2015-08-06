@@ -8,8 +8,12 @@ class AccountController extends LayoutController {
 
     public function add_account() {
         $this->menu ();
-        $this->assign ( 'title', '新增账号' );
-        $this->assign ( 'url', '/zebra/Home/Account/add_account' );
+        $url='/zebra/Home/Account/add_account';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $roles= M('Role','', $this->get_gmserver())->select();
 
         $flag=true;
@@ -45,7 +49,10 @@ class AccountController extends LayoutController {
     public function modify_account() {
         $this->menu ();
         $this->assign ( 'title', '权限设置' );
-        $this->assign ( 'url', '/zebra/Home/Account/modify_account' );
+        $url='/zebra/Home/Account/modify_account';
+        $this->assign ( 'active_open_id', 13);
+        $this->assign ( 'url', $url);
+
         $flag=true;
         $uid = $_GET['uid'];
         if($_GET['uid']=="") $flag=false;
@@ -91,8 +98,11 @@ class AccountController extends LayoutController {
 
     public function account_list() {
         $this->menu ();
-        $this->assign ( 'title', '账号列表' );
-        $this->assign ( 'url', '/zebra/Home/Account/account_list' );
+        $url='/zebra/Home/Account/account_list';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $users=M('User','', $this->get_gmserver())->select();
         $users_all=array();
@@ -110,7 +120,9 @@ class AccountController extends LayoutController {
     public function delete_account() {
         $this->menu ();
         $this->assign ( 'title', '删除账号' );
-        $this->assign ( 'url', '/zebra/Home/Account/delete_account' );
+        $url='/zebra/Home/Account/delete_account';
+        $this->assign ( 'active_open_id', 13);
+        $this->assign ( 'url', $url);
 
         $flag=true;
         $uid = $_GET['uid'];

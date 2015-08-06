@@ -8,8 +8,11 @@ class RegAndOnlineController extends LayoutController {
 
 	public function hero_online() {
 		$this->menu ();
-		$this->assign ( 'title', '实时在线' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/hero_online' );
+		$url='/zebra/Home/RegAndOnline/hero_online';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$servers=$this->get_all_server();
 		$sendData = array (
@@ -62,10 +65,13 @@ class RegAndOnlineController extends LayoutController {
 
     public function new_user() {
         $this->menu ();
-        $this->assign ( 'title', '新增玩家' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/new_user' );
+		$url='/zebra/Home/RegAndOnline/new_user';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
-        $start_date = $_POST['start_date'];
+		$start_date = $_POST['start_date'];
         $end_date = $_POST['end_date'];
 
         if($_POST['start_date']==""){
@@ -139,8 +145,11 @@ class RegAndOnlineController extends LayoutController {
 
 	public function hero_retention() {
 		$this->menu();
-		$this->assign('title','角色留存');
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/hero_retention' );
+		$url='/zebra/Home/RegAndOnline/hero_retention';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
@@ -187,8 +196,11 @@ class RegAndOnlineController extends LayoutController {
 
 	public function user_retention() {
 		$this->menu();
-		$this->assign('title','玩家留存');
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/user_retention' );
+		$url='/zebra/Home/RegAndOnline/user_retention';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
@@ -238,9 +250,11 @@ class RegAndOnlineController extends LayoutController {
 
 	public function level_statistic() {
 		$this->menu ();
-		$this->assign ( 'title', '等级分布' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/level_statistic' );
-
+		$url='/zebra/Home/RegAndOnline/level_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$check_date = $_POST['check_date'];
 
@@ -399,8 +413,11 @@ class RegAndOnlineController extends LayoutController {
 
     public function dungeon_statistic() {
         $this->menu ();
-        $this->assign ( 'title', '关卡统计' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/dungeon_statistic' );
+		$url='/zebra/Home/RegAndOnline/dungeon_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$servers=$this->get_all_server();
 		$values=$_POST['checkbox'];
@@ -466,9 +483,11 @@ class RegAndOnlineController extends LayoutController {
 
     public function online_statistic() {
         $this->menu ();
-        $this->assign ( 'title', '在线统计' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/online_statistic' );
-
+		$url='/zebra/Home/RegAndOnline/online_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 		$check_date = $_POST['check_date'];
 		if($_POST['check_date']==""){
 			$check_date = date('Y-m-d',time()-86400);
@@ -509,10 +528,11 @@ class RegAndOnlineController extends LayoutController {
 
     public function login_statistic() {
         $this->menu ();
-        $this->assign ( 'title', '登陆统计' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/login_statistic' );
-
-		$check_date = $_POST['check_date'];
+		$url='/zebra/Home/RegAndOnline/login_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		if($_POST['check_date']==""){
 			$check_date = date('Y-m-d',time()-86400);
@@ -557,9 +577,11 @@ class RegAndOnlineController extends LayoutController {
 
     public function phone_statistic() {
         $this->menu ();
-        $this->assign ( 'title', '机型分布' );
-		$this->assign ( 'url', '/zebra/Home/RegAndOnline/phone_statistic' );
-
+		$url='/zebra/Home/RegAndOnline/phone_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
         $phones=array();
 
         $this->assign ( 'phones', $phones);

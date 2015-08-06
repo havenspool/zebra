@@ -8,8 +8,11 @@ class PlayerController extends LayoutController {
 
     public function hero_query() {
         $this->menu ();
-        $this->assign ( 'title', '英雄查询' );
-        $this->assign ( 'url', '/zebra/Home/Player/hero_query' );
+        $url='/zebra/Home/Player/hero_query';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $servers=$this->get_all_server();
 
@@ -54,8 +57,11 @@ class PlayerController extends LayoutController {
 
     public function hero_list_player() {
         $this->menu ();
-        $this->assign ( 'title', '玩家英雄列表' );
-        $this->assign ( 'url', '/zebra/Home/Player/hero_list_player' );
+        $url='/zebra/Home/Player/hero_list_player';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $flag=true;
         $userId = $_POST['userId'];
@@ -100,8 +106,12 @@ class PlayerController extends LayoutController {
 
     public function user_rank() {
         $this->menu ();
-        $this->assign ( 'title', '英雄排行' );
-        $this->assign ( 'url', '/zebra/Home/Player/user_rank' );
+        $url='/zebra/Home/Player/user_rank';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $flag=true;
         $userId = $_POST['userId'];
         $userName = $_POST['userName'];
@@ -164,8 +174,12 @@ class PlayerController extends LayoutController {
 
     public function currency_analysis_player() {
         $this->menu ();
-        $this->assign ( 'title', '货币流水' );
-        $this->assign ( 'url', '/zebra/Home/Player/currency_analysis_player' );
+        $url='/zebra/Home/Player/currency_analysis_player';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $servers=$this->get_all_server();
 
         $flag=true;

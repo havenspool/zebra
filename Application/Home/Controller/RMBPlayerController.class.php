@@ -8,8 +8,12 @@ class RMBPlayerController extends LayoutController {
 
     public function recharge_query() {
         $this->menu ();
-        $this->assign ( 'title', '充值&查询' );
-        $this->assign ( 'url', '/zebra/Home/RMBPlayer/recharge_query' );
+        $url='/zebra/Home/RMBPlayer/recharge_query';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $servers=$this->get_all_server();
 
         $flag=true;
@@ -124,8 +128,12 @@ class RMBPlayerController extends LayoutController {
 
     public function recharge_statistic() {
         $this->menu ();
-        $this->assign ( 'title', '充值分布' );
-        $this->assign ( 'url', '/zebra/Home/RMBPlayer/recharge_statistic' );
+        $url='/zebra/Home/RMBPlayer/recharge_statistic';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $servers=$this->get_all_server();
         $values=$_POST['checkbox'];
         $checks=$this->choose_server($values);
@@ -192,8 +200,12 @@ class RMBPlayerController extends LayoutController {
 
     public function recharge_time() {
         $this->menu ();
-        $this->assign ( 'title', '充值时间统计' );
-        $this->assign ( 'url', '/zebra/Home/RMBPlayer/recharge_time' );
+        $url='/zebra/Home/RMBPlayer/recharge_time';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $servers=$this->get_all_server();
         $values=$_POST['checkbox'];
         $checks=$this->choose_server($values);
@@ -240,8 +252,12 @@ class RMBPlayerController extends LayoutController {
 
     public function recharge_amount() {
         $this->menu ();
-        $this->assign ( 'title', '充值金额统计' );
-        $this->assign ( 'url', '/zebra/Home/RMBPlayer/recharge_amount' );
+        $url='/zebra/Home/RMBPlayer/recharge_amount';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
         $servers=$this->get_all_server();
         $values=$_POST['checkbox'];
         $checks=$this->choose_server($values);
@@ -289,8 +305,11 @@ class RMBPlayerController extends LayoutController {
 
     public function recharge_rank() {
         $this->menu ();
-        $this->assign ( 'title', '充值排行榜' );
-        $this->assign ( 'url', '/zebra/Home/RMBPlayer/recharge_rank' );
+        $url='/zebra/Home/RMBPlayer/recharge_rank';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $start_date = $_POST['start_date'];
         $end_date = $_POST['end_date'];
@@ -326,7 +345,7 @@ class RMBPlayerController extends LayoutController {
             $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
             $db_user="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_user'];
 
-            $pays = M ('payments', '', $db_user)->query("SELECT * FROM payments where 1=1 ".$date_sql."  order by payamount desc limit 0,20 ");
+            $pays = M ('payments', '', $db_user)->query("SELECT * FROM payments where payamount*100>0 and status=1 ".$date_sql."  order by payamount*100 desc limit 0,20 ");
             foreach($pays as $pay){
                 $hero = M ('heroes', '', $db_hero)->query("select * from heroes where userId=".$pay['userid'] );
                 $user=M ('users', '', $db_user)->query("select * from users where id=".$pay['userid']);
@@ -348,11 +367,10 @@ class RMBPlayerController extends LayoutController {
                 $pay_orders[$pay['orderid']]['level']=$hero[0]['level'];
             }
 
-            $pays_data = M ('payments', '', $db_user)->query("SELECT *,sum(payamount*100) payamount FROM payments  where 1=1 and (".$server_id_sql.")".$date_sql." group by heroid order by payamount desc limit 0,20 ");
+            $pays_data = M ('payments', '', $db_user)->query("SELECT *,sum(payamount*100) payamount FROM payments  where payamount>0 and (".$server_id_sql.")".$date_sql." group by heroid order by payamount desc limit 0,20 ");
             foreach($pays_data as $pay){
                 $hero = M ('heroes', '', $db_hero)->query("select * from heroes where id=".$pay['heroid'] );
                 $user=M ('users', '', $db_user)->query("select * from users where id=".$pay['userid']);
-
 
                 $pay_ranks[$pay['heroid']]['timestamp']=date('Y-m-d',$pay['timestamp']);
                 $pay_ranks[$pay['heroid']]['orderid']=$pay['orderid'];
@@ -382,8 +400,11 @@ class RMBPlayerController extends LayoutController {
 
     public function first_recharge() {
         $this->menu ();
-        $this->assign ( 'title', '首充等级统计' );
-        $this->assign ( 'url', '/zebra/Home/RMBPlayer/first_recharge' );
+        $url='/zebra/Home/RMBPlayer/first_recharge';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
 
         $servers=$this->get_all_server();
         $values=$_POST['checkbox'];
@@ -428,4 +449,48 @@ class RMBPlayerController extends LayoutController {
         $this->display ();
     }
 
+    public function pay_rate() {
+        $this->menu ();
+        $url='/zebra/Home/RMBPlayer/pay_rate';
+        $menu=$this->get_menu_from_url($url);
+        $this->assign ( 'title', $menu['title']);
+        $this->assign ( 'active_open_id', $menu['pid']);
+        $this->assign ( 'url', $url);
+
+        $servers=$this->get_all_server();
+        $values=$_POST['checkbox'];
+        $checks=$this->choose_server($values);
+        $pays=array();
+        $date=date('Y-m-d',time()+86400);
+
+        foreach ($checks as $check){
+            $db=$this->get_db_from_id($check['plat_id']);
+            if(empty($db)) continue;
+            $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+            $db_user="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_user'];
+            //channel
+            $server=$this->get_server_from_id($check['plat_id']);
+
+            $all_pay = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.heroid) pay_hero,count(distinct p.userid) pay_user from payments p,users u where p.userid=u.id and u.platform=".$server['channel']." and p.status=1 and p.payamount*10>0");
+            if(count($all_pay)>0) {
+                $pays[$server['channel']]['date']=date('Y-m-d',time());
+                $pays[$server['channel']]['platform']=$this->get_platfrom_name_from_platfrom($server['channel']);
+                $pays[$server['channel']]['pay_hero']+=$all_pay[0]['pay_hero'];
+                $pays[$server['channel']]['pay_user']+=$all_pay[0]['pay_user'];
+            }
+            $hero = M ( 'heroes_stat', '', $db_hero)->query ( "select count(s.heroid) role from heroes_stat s,heroes h where h.platform=".$server['channel']." and s.heroid=h.id and UNIX_TIMESTAMP(from_unixtime(s.regTime,'%Y-%m-%d')) <= UNIX_TIMESTAMP('".$date."')" );
+            if(count($hero)>0) {
+                $pays[$server['channel']]['hero']+=$hero[0]['role'];
+            }
+            $user = M ( 'users', '',  $db_user)->query ( "select count(h.id) user from users h where platform=".$server['channel']." and UNIX_TIMESTAMP(from_unixtime(UNIX_TIMESTAMP(h.created),'%Y-%m-%d')) <= UNIX_TIMESTAMP('".$date."')" );
+            if(count($user)>0) {
+                $pays[$server['channel']]['user']+=$user[0]['user'];
+            }
+        }
+
+        $this->assign ( 'pays', $pays );
+        $this->assign ( 'checks', $checks );
+        $this->assign ( 'servers', $servers );
+        $this->display ();
+    }
 }

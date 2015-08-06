@@ -8,8 +8,11 @@ class OperationController extends LayoutController {
 
 	public function send_mail() {
 		$this->menu ();
-		$this->assign ( 'title', '发送邮件' );
-		$this->assign ( 'url', '/zebra/Home/Operation/send_mail' );
+		$this->assign ( 'title', '点击发送邮件' );
+		$url='/zebra/Home/Operation/send_mail';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'active_open_id', 11);
+		$this->assign ( 'url', $url);
 
 		$all_heroids = $_POST['all_heroids'];
 		$heroids = $_POST['send_mail_heroids'];
@@ -132,8 +135,11 @@ class OperationController extends LayoutController {
 
     public function send_mail_list() {
 		$this->menu ();
-		$this->assign ( 'title', '发送邮件记录' );
-		$this->assign ( 'url', '/zebra/Home/Operation/send_mail_list' );
+		$url='/zebra/Home/Operation/send_mail_list';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$send_mail_list = F('send_mail_list');//从缓存获取数据
 			if(empty($send_mail_list)){
@@ -145,8 +151,11 @@ class OperationController extends LayoutController {
 
 	public function send_board() {
 		$this->menu ();
-		$this->assign ( 'title', '发布公告' );
-		$this->assign ( 'url', '/zebra/Home/Operation/send_board' );
+		$url='/zebra/Home/Operation/send_board';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$flag=true;
 		$content = $_POST['send_board_content'];
@@ -227,7 +236,9 @@ class OperationController extends LayoutController {
 	public function send_board_online() {
 		$this->menu ();
 		$this->assign ( 'title', '公告发布记录' );
-		$this->assign ( 'url', '/zebra/Home/Operation/send_board_online' );
+		$url='/zebra/Home/Operation/send_board_online';
+		$this->assign ( 'active_open_id', 11);
+		$this->assign ( 'url', $url);
 
 		$flag=true;
 		$content = $_POST['send_board_online_content'];
@@ -282,8 +293,11 @@ class OperationController extends LayoutController {
 
 	public function send_board_list() {
 		$this->menu ();
-		$this->assign ( 'title', '公告发布记录' );
-		$this->assign ( 'url', '/zebra/Home/Operation/send_board_list' );
+		$url='/zebra/Home/Operation/send_board_list';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$send_board_list = F('send_board_list');//从缓存获取数据
 		if(empty($send_board_list)){
@@ -359,8 +373,11 @@ class OperationController extends LayoutController {
 
     public function currency_analysis() {
         $this->menu ();
-        $this->assign ( 'title', '货币分析' );
-		$this->assign ( 'url', '/zebra/Home/Operation/currency_analysis' );
+		$url='/zebra/Home/Operation/currency_analysis';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
 
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
@@ -443,8 +460,12 @@ class OperationController extends LayoutController {
 
     public function hero_list() {
         $this->menu ();
-        $this->assign ( 'title', '角色列表' );
-		$this->assign ( 'url', '/zebra/Home/Operation/hero_list' );
+		$url='/zebra/Home/Operation/hero_list';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
+
 		$servers=$this->get_all_server();
 		$values=$_POST['checkbox'];
 		$checks=$this->choose_server($values);
@@ -516,8 +537,12 @@ class OperationController extends LayoutController {
 
 	public function battle_statistic() {
 		$this->menu();
-		$this->assign ( 'title', '竞技统计' );
-		$this->assign ( 'url', '/zebra/Home/Operation/battle_statistic' );
+		$url='/zebra/Home/Operation/battle_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
+
 		$servers=$this->get_all_server();
 		$values=$_POST['checkbox'];
 		$checks=$this->choose_server($values);
@@ -574,8 +599,12 @@ class OperationController extends LayoutController {
 
 	public function time_statistic() {
 		$this->menu();
-		$this->assign('title','竞技时长统计');
-		$this->assign ( 'url', '/zebra/Home/Operation/time_statistic' );
+		$url='/zebra/Home/Operation/time_statistic';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
+
 
 		$servers=$this->get_all_server();
 		$values=$_POST['checkbox'];
@@ -623,8 +652,12 @@ class OperationController extends LayoutController {
 
 	public function code_gen() {
         $this->menu ();
-        $this->assign ( 'title', '礼品卡生产' );
-		$this->assign ( 'url', '/zebra/Home/Operation/code_gen' );
+		$url='/zebra/Home/Operation/code_gen';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
+
         $recharge=array();
 
         $this->assign ( 'recharge', $recharge);
@@ -633,8 +666,12 @@ class OperationController extends LayoutController {
 
     public function code_list() {
         $this->menu ();
-        $this->assign ( 'title', '礼品卡浏览' );
-		$this->assign ( 'url', '/zebra/Home/Operation/code_list' );
+		$url='/zebra/Home/Operation/code_list';
+		$menu=$this->get_menu_from_url($url);
+		$this->assign ( 'title', $menu['title']);
+		$this->assign ( 'active_open_id', $menu['pid']);
+		$this->assign ( 'url', $url);
+
         $recharge=array();
 
         $this->assign ( 'recharge', $recharge);
