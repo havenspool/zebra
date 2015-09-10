@@ -371,8 +371,8 @@ class OperationController extends LayoutController {
 		}
 	}
 
-    public function currency_analysis() {
-        $this->menu ();
+  public function currency_analysis() {
+    $this->menu ();
 		$url='/zebra/Home/Operation/currency_analysis';
 		$menu=$this->get_menu_from_url($url);
 		$this->assign ( 'title', $menu['title']);
@@ -390,8 +390,7 @@ class OperationController extends LayoutController {
 		}
 
 		$currency_type = $_POST['currency_radio'];
-		if($currency_type==0) $currency_type=1;
-
+		if($_POST['currency_radio']=='') $currency_type=0;
 
 		$servers=$this->get_all_server();
 		$values=$_POST['checkbox'];
@@ -410,13 +409,13 @@ class OperationController extends LayoutController {
 		}
 		$currencys=$this->get_currency_types();
 		$currency_type_str="";
-		if($currency_type==1) $currency_type_str="gold";
-		else if($currency_type==2) $currency_type_str="coins";
+		if($currency_type==0) $currency_type_str="gold";
+		else if($currency_type==1) $currency_type_str="coins";
 		foreach($currency_datas as $tmp_data){
 			foreach($tmp_data as $currency_data){
-
 				//Array ( [platform] => 0 [server_id] => 9999 [date] => 1437667200 [period] => 10
 				// [currency_type] => 0 [type] => 1 [use_type] => 4 [amount] => 80000 )
+				//$currency_type 0金币１银币
 				//type 1增加2消耗
 				//use_type　增加或消耗类型
 				$dates[$currency_data['date']]['date']=$currency_data['date'];
@@ -432,8 +431,6 @@ class OperationController extends LayoutController {
 					$dates[$currency_data['date']]['use']+=$currency_data['amount'];
 					$periods[$currency_data['period']]['use']+=$currency_data['amount'];
 				}
-
-
 			}
 		}
 
@@ -445,7 +442,7 @@ class OperationController extends LayoutController {
 			$periods[$period['date']]['sum']=$periods[$period['date']]['source']-$periods[$period['date']]['use'];
 		}
 
-		$this->assign ( 'type', $type);
+		$this->assign ( 'type', $currency_type);
 
 		$this->assign ( 'source_types', $source_types );
 		$this->assign ( 'use_types', $use_types );
@@ -455,8 +452,8 @@ class OperationController extends LayoutController {
 		$this->assign('end_date',$end_date);
 		$this->assign ( 'checks', $checks );
 		$this->assign ( 'servers', $servers );
-        $this->display ();
-    }
+    $this->display ();
+  }
 
     public function hero_list() {
         $this->menu ();

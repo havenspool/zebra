@@ -5,9 +5,15 @@ use Think\Controller;
 
 class LayoutController extends Controller {
 
+//	public function get_game(){
+//		return "mysql://root:havens@127.0.0.1:3306/game"; //"mysql://root:it1S4Qn5xW7y@10.66.118.188:3306/game";
+//	}
+//	public function get_game_user(){
+//		return "mysql://root:havens@127.0.0.1:3306/game_user";
+//	}
 
 	public function get_gmserver(){
-		return "mysql://root:pwd@127.0.0.1:3306/gmserver";
+		return "mysql://root:havens@127.0.0.1:3306/gmserver";
 	}
 	
 // 	Public function _initialize(){
