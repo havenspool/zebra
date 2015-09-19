@@ -119,7 +119,8 @@ class ServerController extends LayoutController {
         $servers=$this->get_all_server();
         $servers_all=array();
         foreach($servers as $server){
-            $server['platform_name']=$this->get_platform($server['platform'])['name'];
+            $platform=$this->get_platform($server['platform']);
+            $server['platform_name']=$platform['name'];
             array_push ($servers_all, $server);
         }
 

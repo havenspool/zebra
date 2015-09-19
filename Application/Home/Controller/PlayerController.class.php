@@ -96,7 +96,8 @@ class PlayerController extends LayoutController {
             }
             foreach($datas as $tmp){
                 foreach($tmp as $data){
-                    $data['platform']=$this->get_platform($data['platform'])['name'];
+                    $platform=$this->get_platform($data['platform']);
+                    $data['platform']=$platform['name'];
                     $data['type']=$this->getType($data['type']);
                     $hero_datas[$data['id']]=$data;
                 }
@@ -147,7 +148,8 @@ class PlayerController extends LayoutController {
                         $stat = $this->conn_server($server['host'], $server['port'], $sendData);
                         $hero_datas[$hero['id']]['userid'] = $users[0]['id'];
                         $hero_datas[$hero['id']]['username'] = $users[0]['name'];
-                        $hero_datas[$hero['id']]['platform'] =$this->get_platform($hero['platform'])['name'];
+                        $platform=$this->get_platform($hero['platform']);
+                        $hero_datas[$hero['id']]['platform'] =$platform['name'];
                         $hero_datas[$hero['id']]['id'] = $hero['id'];
                         $hero_datas[$hero['id']]['name'] = $hero['name'];
                         $hero_datas[$hero['id']]['type'] =$this->getType($hero['type']);

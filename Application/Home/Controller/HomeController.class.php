@@ -27,7 +27,6 @@ class HomeController extends LayoutController {
         }else{
           $values = F($url.'values');//从缓存获取已选择服务器
         }
-
         $daily=array();
         $daily['date']=$check_date;
         $db_user=$this->get_dbuser();

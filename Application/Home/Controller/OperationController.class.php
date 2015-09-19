@@ -520,7 +520,8 @@ class OperationController extends LayoutController {
 
 			$hero_data = M('heroes','',$db_hero)->query("select * from heroes where vip >=".$vip_start." and vip <=".$vip_end." and level >=".$level_start." and level <=".$level_end." order by level desc,vip desc,_power desc limit ".($page_no-1)*$page_size.",".$page_no*$page_size);
 			foreach($hero_data as $data){
-				$data['platform']=$this->get_platform($data['platform'])['name'];
+				$platform=$this->get_platform($data['platform']);
+				$data['platform']=$platform['name'];
 				$data['type']=$this->getType($data['type']);
 				$pays = M ('payments', '', $db_user)->query("select count(orderid) times,sum(payamount*100)/100 pay from payments where heroid=".$data['id']);
 				if(count($pays)>0){
@@ -746,7 +747,8 @@ class OperationController extends LayoutController {
 									$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
 									$hero_datas[$hero['id']]['vip']=$hero['vip'];
 									$hero_datas[$hero['id']]['level']=$hero['level'];
-									$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+									$platform=$this->get_platform($hero['platform']);
+									$hero_datas[$hero['id']]['platform']=$platform['name'];
 									$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
 
 									$user = M ('users', '', $db_user)->query("select * from users where id=".$hero['userid'] );
@@ -786,7 +788,8 @@ class OperationController extends LayoutController {
 										$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
 										$hero_datas[$hero['id']]['vip']=$hero['vip'];
 										$hero_datas[$hero['id']]['level']=$hero['level'];
-										$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+										$platform=$this->get_platform($hero['platform']);
+										$hero_datas[$hero['id']]['platform']=$platform['name'];
 										$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
 
 										$user = M ('users', '', $db_user)->query("select * from users where id=".$hero['userid'] );
@@ -823,7 +826,8 @@ class OperationController extends LayoutController {
 										$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
 										$hero_datas[$hero['id']]['vip']=$hero['vip'];
 										$hero_datas[$hero['id']]['level']=$hero['level'];
-										$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+										$platform=$this->get_platform($hero['platform']);
+										$hero_datas[$hero['id']]['platform']=$platform['name'];
 										$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
 
 										$user = M ('users', '', $db_user)->query("select * from users where id=".$hero['userid'] );
@@ -863,7 +867,8 @@ class OperationController extends LayoutController {
 										$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
 										$hero_datas[$hero['id']]['vip']=$hero['vip'];
 										$hero_datas[$hero['id']]['level']=$hero['level'];
-										$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+										$platform=$this->get_platform($hero['platform']);
+										$hero_datas[$hero['id']]['platform']=$platform['name'];
 										$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
 
 										$payment = M ('payments', '', $db_user)->query("select sum(payamount) pay FROM payments where status=1 and heroid=".$hero['id'] );
@@ -929,35 +934,40 @@ class OperationController extends LayoutController {
 				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold<1000 and platform=".$server['platform'] );
 				if(count($heroes)>0){
 					$pie_datas[1]+=$heroes[0]['count'];
-					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$platform=$this->get_platform($server['platform']);
+					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][1]+=$heroes[0]['count'];
 				}
 				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 1000 and 5000 and platform=".$server['platform'] );
 				if(count($heroes)>0){
 					$pie_datas[2]+=$heroes[0]['count'];
-					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$platform=$this->get_platform($server['platform']);
+					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']+=$server['server_name'];
 					$datas[$server['server_id']][2]+=$heroes[0]['count'];
 				}
 				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 5000 and 10000 and platform=".$server['platform'] );
 				if(count($heroes)>0){
 					$pie_datas[3]+=$heroes[0]['count'];
-					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$platform=$this->get_platform($server['platform']);
+					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][3]+=$heroes[0]['count'];
 				}
 				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 10000 and 100000 and platform=".$server['platform'] );
 				if(count($heroes)>0){
 					$pie_datas[4]+=$heroes[0]['count'];
-					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$platform=$this->get_platform($server['platform']);
+					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][4]+=$heroes[0]['count'];
 				}
 				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold>100000 and platform=".$server['platform'] );
 				if(count($heroes)>0){
 					$pie_datas[5]+=$heroes[0]['count'];
-					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$platform=$this->get_platform($server['platform']);
+					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][5]+=$heroes[0]['count'];
 				}

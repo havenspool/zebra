@@ -143,17 +143,9 @@ class LayoutController extends Controller {
 		return $status;
 	}
 
-	public function reload_server(){
-		$username=$this->getUsername();
-		F('server_list_'.$username,NULL);
-		// $server_list = S('server_list_'.$username);//从缓存获取已选择服务器
-		$server_list= M('Server')->select();
-		F('server_list_'.$username,$server_list);
-	}
-
 	public function get_all_server(){
 		$username=$this->getUsername();
-		F('server_list_'.$username,NULL);
+		// F('server_list_'.$username,NULL);
 		// $server_list = S('server_list_'.$username);//从缓存获取已选择服务器
 		$server_list = F('server_list_'.$username);//从缓存获取已选择服务器
 		if(empty($server_list)){
@@ -165,22 +157,24 @@ class LayoutController extends Controller {
 	}
 
 	public function get_all_platforms(){
-		F('platforms',NULL);
-		$platforms = F('platforms');
+		$username=$this->getUsername();
+		// F('platforms',NULL);
+		$platforms = F('platforms'.$username);
 		if(empty($server_list)){
 			$platforms = M ( 'platforms', '', $this->get_gmserver())->query ( "SELECT  *  from platforms where enable=1");
-			F('platforms',$platforms);
+			F('platforms'.$username,$platforms);
 			return $platforms;
 		}
 		return $platforms;
 	}
 
 	public function get_db(){
-		F('db_list',NULL);
-		$db_list = F('db_list');//从缓存获取已选择服务器
+		$username=$this->getUsername();
+		// F('db_list',NULL);
+		$db_list = F('db_list'.$username);//从缓存获取已选择服务器
 		if(empty($db_list)){
 			$db_list= $this->get_db_from_config();
-			F('db_list',$db_list);
+			F('db_list',$db_list.$username);
 			return $db_list;
 		}
 		return $db_list;
@@ -194,11 +188,12 @@ class LayoutController extends Controller {
 	}
 
 	public function get_dbuser(){
-		F('dbuser_list',NULL);
-		$dbuser_list = F('dbuser_list');//从缓存获取已选择服务器
+		$username=$this->getUsername();
+		// F('dbuser_list',NULL);
+		$dbuser_list = F('dbuser_list'.$username);//从缓存获取已选择服务器
 		if(empty($dbuser_list)){
 			$dbuser_list= $this->get_dbuser_from_config();
-			F('dbuser_list',$dbuser_list);
+			F('dbuser_list',$dbuser_list.$username);
 			return $dbuser_list;
 		}
 		return $dbuser_list;
@@ -210,11 +205,12 @@ class LayoutController extends Controller {
 	}
 
 	public function get_gmserver(){
-		F('gmserver',NULL);
-		$gmserver = F('gmserver');//从缓存获取已选择服务器
+		$username=$this->getUsername();
+		// F('gmserver',NULL);
+		$gmserver = F('gmserver'.$username);//从缓存获取已选择服务器
 		if(empty($gmserver)){
 			$gmserver= $this->get_gmserver_from_config();
-			F('gmserver',$gmserver);
+			F('gmserver'.$username,$gmserver);
 			return $gmserver;
 		}
 		return $gmserver;

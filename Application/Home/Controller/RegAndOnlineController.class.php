@@ -693,8 +693,10 @@ class RegAndOnlineController extends LayoutController {
 		$pie_datas=array();
 		foreach($online_data as $online){
 			foreach($online as $data){
-				$datas[$data['platform']][$data['server_id']]['server_name']=$this->get_server_from_id($data['server_id'])['server_name'];
-				$datas[$data['platform']][$data['server_id']]['channel_name']=$this->get_platform($data['platform'])['name'];
+				$server=$this->get_server_from_id($data['server_id']);
+				$datas[$data['platform']][$data['server_id']]['server_name']=$server['server_name'];
+				$platform=$this->get_platform($data['platform']);
+				$datas[$data['platform']][$data['server_id']]['channel_name']=$platform['name'];
 				$datas[$data['platform']][$data['server_id']][$data['time_type']]+=$data['time_num'];
 				$pie_datas[$data['time_type']]+=$data['time_num'];
 			}

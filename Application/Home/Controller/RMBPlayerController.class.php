@@ -61,7 +61,8 @@ class RMBPlayerController extends LayoutController {
                       $hero_datas[$pay['orderid']]['status']=$pay['status'];
 
                       $hero_datas[$pay['orderid']]['username']=$users[0]['name'];
-                      $hero_datas[$pay['orderid']]['platform']=$this->get_platform($hero[0]['platform'])['name'];
+                      $platform=$this->get_platform($hero[0]['platform']);
+                      $hero_datas[$pay['orderid']]['platform']=$platform['name'];
                       $hero_datas[$pay['orderid']]['heroid']=$hero[0]['id'];
                       $hero_datas[$pay['orderid']]['heroname']=$hero[0]['name'];
                       $hero_datas[$pay['orderid']]['type']=$this->getType($hero[0]['type']);
@@ -85,7 +86,8 @@ class RMBPlayerController extends LayoutController {
                   $hero_datas[$pays[0]['orderid']]['status']=$pays[0]['status'];
 
                   $hero_datas[$pays[0]['orderid']]['username']=$users[0]['name'];
-                  $hero_datas[$pays[0]['orderid']]['platform']=$this->get_platform($hero[0]['platform'])['name'];
+                  $platform=$this->get_platform($hero[0]['platform']);
+                  $hero_datas[$pays[0]['orderid']]['platform']=$platform['name'];
                   $hero_datas[$pays[0]['orderid']]['heroid']=$hero[0]['id'];
                   $hero_datas[$pays[0]['orderid']]['heroname']=$hero[0]['name'];
                   $hero_datas[$pays[0]['orderid']]['type']=$this->getType($hero[0]['type']);
@@ -111,7 +113,8 @@ class RMBPlayerController extends LayoutController {
                       $hero_datas[$pay['orderid']]['status']=$pay['status'];
 
                       $hero_datas[$pay['orderid']]['username']=$users[0]['name'];
-                      $hero_datas[$pay['orderid']]['platform']=$this->get_platform($hero[0]['platform'])['name'];
+                      $platform=$this->get_platform($hero[0]['platform']);
+                      $hero_datas[$pay['orderid']]['platform']=$platform['name'];
                       $hero_datas[$pay['orderid']]['heroid']=$hero[0]['id'];
                       $hero_datas[$pay['orderid']]['heroname']=$hero[0]['name'];
                       $hero_datas[$pay['orderid']]['type']=$this->getType($hero[0]['type']);
@@ -163,7 +166,8 @@ class RMBPlayerController extends LayoutController {
           $pay_time= M('pay_time','', $this->get_gmserver())->where(" platform=".$value." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
           foreach($pay_time as $pay){
               //pay_statistic	platform	server_id	date	period	num	pay
-              $pay_times[$pay['date']][$pay['period']]['platform']=$this->get_platform($pay['platform'])['name'];
+              $platform=$this->get_platform($pay['platform']);
+              $pay_times[$pay['date']][$pay['period']]['platform']=$platform['name'];
               $pay_times[$pay['date']][$pay['period']]['server_id']=$pay['server_id'];
               $pay_times[$pay['date']][$pay['period']]['date']=date("Y-m-d",$pay['date']);
               $pay_times[$pay['date']][$pay['period']]['period']=$this->get_period($pay['period']);
@@ -219,7 +223,8 @@ class RMBPlayerController extends LayoutController {
           $pay_statistic= M('pay_statistic','', $this->get_gmserver())->where(" platform=".$value." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
           foreach($pay_statistic as $pay){
               //pay_statistic	platform	server_id	date	pay_part	num	pay
-              $pay_statistics[$pay['date']][$pay['pay_part']]['platform']=$this->get_platform($pay['platform'])['name'];
+              $platform=$this->get_platform($pay['platform']);
+              $pay_statistics[$pay['date']][$pay['pay_part']]['platform']=$platform['name'];
               $pay_statistics[$pay['date']][$pay['pay_part']]['server_id']=$pay['server_id'];
               $pay_statistics[$pay['date']][$pay['pay_part']]['date']=date("Y-m-d",$pay['date']);
               $pay_statistics[$pay['date']][$pay['pay_part']]['pay_part']=$this->get_pay_part($pay['pay_part']);
@@ -328,7 +333,8 @@ class RMBPlayerController extends LayoutController {
                       $pay_orders[$pay['orderid']]['status']=$pay['status'];
 
                       $pay_orders[$pay['orderid']]['username']=$user[0]['name'];
-                      $pay_orders[$pay['orderid']]['platform']=$this->get_platform($hero[0]['platform'])['name'];
+                      $platform=$this->get_platform($hero[0]['platform']);
+                      $pay_orders[$pay['orderid']]['platform']=$platform['name'];
                       $pay_orders[$pay['orderid']]['heroid']=$hero[0]['id'];
                       $pay_orders[$pay['orderid']]['heroname']=$hero[0]['name'];
                       $pay_orders[$pay['orderid']]['type']=$this->getType($hero[0]['type']);
@@ -354,7 +360,8 @@ class RMBPlayerController extends LayoutController {
                       $pay_ranks[$pay['heroid']]['status']=$pay['status'];
 
                       $pay_ranks[$pay['heroid']]['username']=$user[0]['name'];
-                      $pay_ranks[$pay['heroid']]['platform']=$this->get_platform($hero[0]['platform'])['name'];
+                      $platform=$this->get_platform($hero[0]['platform']);
+                      $pay_ranks[$pay['heroid']]['platform']=$platform['name'];
                       $pay_ranks[$pay['heroid']]['heroid']=$hero[0]['id'];
                       $pay_ranks[$pay['heroid']]['heroname']=$hero[0]['name'];
                       $pay_ranks[$pay['heroid']]['type']=$this->getType($hero[0]['type']);
@@ -538,7 +545,8 @@ class RMBPlayerController extends LayoutController {
               $all_pay = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.heroid) pay_hero,count(distinct p.userid) pay_user from payments p,users u where p.userid=u.id and u.platform=".$server['platform']." and p.serverid=".$server['server_id']." and p.status=1 and p.payamount*10>0");
               if(count($all_pay)>0) {
                   $pays[$server['server_id']]['date']=date('Y-m-d',time());
-                  $pays[$server['server_id']]['platform']=$this->get_platform($server['platform'])['name'];
+                  $platform=$this->get_platform($server['platform']);
+                  $pays[$server['server_id']]['platform']=$platform['name'];
                   $pays[$server['server_id']]['pay_hero']+=$all_pay[0]['pay_hero'];
                   $pays[$server['server_id']]['pay_user']+=$all_pay[0]['pay_user'];
               }
