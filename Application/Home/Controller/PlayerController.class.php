@@ -15,6 +15,7 @@ class PlayerController extends LayoutController {
         $this->assign ( 'url', $url);
 
         $servers=$this->get_all_server();
+        $platforms=$this->get_all_platforms();
 
         $hero=array();
         $materials=array();
@@ -23,20 +24,20 @@ class PlayerController extends LayoutController {
         $heroid = $_POST['heroId'];
         $heroname = $_POST['heroName'];
 
-        $db_id= $_POST['db_select'];
-        if($_POST['db_select']=="") $flag=false;
+  			$server_id = $_POST['server_select'];
+        if($_POST['server_select']=="") $flag=false;
         if($heroid==""&&$heroname=="") $flag=false;
-
-        $server=$this->get_server_from_id($db_id);
 
         if($flag){
             if($heroid=="") $heroid=0;
-            $db=$this->get_db_from_id($db_id);
-            $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+            $db=$this->get_db_from_serverid($server_id);
+            if(!empty($db)){
+              $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-            $hero = M ('heroes', '', $db_hero)->query("select * from heroes where (id=".$heroid." or name='".$heroname."')" );
-            if(count($hero)>0)
-                $materials = M ('heroes_bag', '', $db_hero)->query("select * from heroes_bag where heroId=".$hero[0]['id'] );
+              $hero = M ('heroes', '', $db_hero)->query("select * from heroes where (id=".$heroid." or name='".$heroname."')" );
+              if(count($hero)>0)
+                  $materials = M ('heroes_bag', '', $db_hero)->query("select * from heroes_bag where heroId=".$hero[0]['id'] );
+            }
         }
 
         $items=$this->get_items();
@@ -52,6 +53,7 @@ class PlayerController extends LayoutController {
         $this->assign ( 'hero', $hero[0]);
         $this->assign ( 'materials', $materials_all);
         $this->assign ( 'servers', $servers);
+        $this->assign ( 'platforms', $platforms );
         $this->display ();
     }
 
@@ -77,15 +79,16 @@ class PlayerController extends LayoutController {
         $hero_datas=array();
         if($flag){
             $servers=$this->get_all_server();
+            $db_user=$this->get_dbuser();
             $datas=array();
             foreach($servers as $server){
-                $db=$this->get_db_from_id($server['id']);
+                $db=$this->get_db_from_serverid($server['server_id']);
+                if(empty($db)) continue;
                 $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
-                $db_user="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_user'];
+
                 $users=array();
                 if($userId!=0) $users=M ('users', '', $db_user)->query("select * from users where id=".$userId );
                 else if($userName!="") $users=M ('users', '', $db_user)->query("select * from users where name='".$userName."'" );
-                //$users=M ('users', '', $db_user)->query("select * from users where (id=".$userId." or name='".$userName."')" );
                 if(count($users)>0){
                     $heroes = M ('heroes', '', $db_hero)->query("select * from heroes where userId=".$users[0]['id'] );
                     array_push ($datas, $heroes);
@@ -93,7 +96,7 @@ class PlayerController extends LayoutController {
             }
             foreach($datas as $tmp){
                 foreach($tmp as $data){
-                    $data['platform']=$this->get_platfrom_name_from_platfrom($data['platform']);
+                    $data['platform']=$this->get_platform($data['platform'])['name'];
                     $data['type']=$this->getType($data['type']);
                     $hero_datas[$data['id']]=$data;
                 }
@@ -126,10 +129,11 @@ class PlayerController extends LayoutController {
         $hero_datas=array();
         if($flag) {
             $servers = $this->get_all_server();
+            $db_user=$this->get_dbuser();
             foreach ($servers as $server) {
-                $db = $this->get_db_from_id($server['id']);
+                $db=$this->get_db_from_serverid($server['server_id']);
+                if(empty($db)) continue;
                 $db_hero = "mysql://" . $db['user'] . ":" . $db['pwd'] . "@" . $db['host'] . ":" . $db['port'] . "/" . $db['db_hero'];
-                $db_user = "mysql://" . $db['user'] . ":" . $db['pwd'] . "@" . $db['host'] . ":" . $db['port'] . "/" . $db['db_user'];
 
                 $users = M('users', '', $db_user)->query("select id,name from users where (id=" . $userId . " or name='" . $userName . "')");
                 if (count($users) > 0) {
@@ -143,7 +147,7 @@ class PlayerController extends LayoutController {
                         $stat = $this->conn_server($server['host'], $server['port'], $sendData);
                         $hero_datas[$hero['id']]['userid'] = $users[0]['id'];
                         $hero_datas[$hero['id']]['username'] = $users[0]['name'];
-                        $hero_datas[$hero['id']]['platform'] =$this->get_platfrom_name_from_platfrom($hero['platform']);
+                        $hero_datas[$hero['id']]['platform'] =$this->get_platform($hero['platform'])['name'];
                         $hero_datas[$hero['id']]['id'] = $hero['id'];
                         $hero_datas[$hero['id']]['name'] = $hero['name'];
                         $hero_datas[$hero['id']]['type'] =$this->getType($hero['type']);
@@ -185,8 +189,8 @@ class PlayerController extends LayoutController {
         $flag=true;
         $heroid = $_POST['heroId'];
         $heroname = $_POST['heroName'];
-        $db_id= $_POST['db_select'];
-        if($_POST['db_select']=="") $flag=false;
+        $server_id = $_POST['server_select'];
+        if($_POST['server_select']=="") $flag=false;
         if($heroid==""&&$heroname=="") $flag=false;
 
         $start_date = $_POST['start_date'];
@@ -204,13 +208,14 @@ class PlayerController extends LayoutController {
 
         if($flag){
             if($heroid=="") $heroid=0;
+            $db=$this->get_db_from_serverid($server_id);
+            if(!empty($db)){
+              $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-            $db=$this->get_db_from_id($db_id);
-            $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
-
-            $hero = M ('heroes', '', $db_hero)->query("select * from heroes where (id=".$heroid." or name='".$heroname."')" );
-            if(count($hero)>0)
-                $materials = M ('heroes_bag', '', $db_hero)->query("select * from heroes_bag where heroId=".$hero[0]['id'] );
+              $hero = M ('heroes', '', $db_hero)->query("select * from heroes where (id=".$heroid." or name='".$heroname."')" );
+              if(count($hero)>0)
+                  $materials = M ('heroes_bag', '', $db_hero)->query("select * from heroes_bag where heroId=".$hero[0]['id'] );
+            }
         }
         $source_types=array();
         $use_types=array();
@@ -220,13 +225,17 @@ class PlayerController extends LayoutController {
         $money_datas=array();
         if($flag) {
             if ($heroid == "") $heroid = 0;
-            $db=$this->get_db_from_id($db_id);
-            $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+            $db=$this->get_db_from_serverid($server_id);
+            if(!empty($db)){
+              $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-            $hero = M ('heroes', '', $db_hero)->query("select * from heroes where (id=".$heroid." or name='".$heroname."')" );
-            if(count($hero)>0)
-                $money_datas = M ('heroes_uses', '', $db_hero)->where(" heroId=".$hero[0]['id']." and costType=".$type." and time >= UNIX_TIMESTAMP('".$start_date."') and time <= UNIX_TIMESTAMP('".$end_date."')")->select();
+              $hero = M ('heroes', '', $db_hero)->query("select * from heroes where (id=".$heroid." or name='".$heroname."')" );
+              if(count($hero)>0)
+                  $money_datas = M ('heroes_uses', '', $db_hero)->where(" heroId=".$hero[0]['id']." and costType=".$type." and time >= UNIX_TIMESTAMP('".$start_date."') and time <= UNIX_TIMESTAMP('".$end_date."')")->select();
+            }
         }
+
+
 
         $moneys=$this->get_currency_types();
         $money_type="";

@@ -13,17 +13,22 @@
     }
 </script>
 <form name="send_mail" id="send_mail" action="send_mail" method="post">
-    <div class="controls">
-        <label>平台&游戏服:
-            <?php
-            $index=0;
-            foreach ($servers as $server) {
-                echo "<input id='checkbox[]"."' name='checkbox[]"."' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."&".$server['server_name']."</span>";
-                $index++;
-            }
-            ?>
-        </label>
-    </div>
+  <div class="controls">
+			<label>游戏服:
+					<?php
+						foreach ($servers as $server) {
+							echo "<input  type='radio' id='checkbox_servers[]' name='checkbox_servers[]' class='ace-checkbox-2' value=".$server['server_id']." ";
+							foreach ($choose_servers as $choose_server) {
+								if($choose_server==$server['server_id']){
+									echo " checked ";
+									break;
+								}
+							}
+							echo " /><span class='lbl'>".$server['server_name']."</span>";
+						}
+					?>
+			</label>
+	</div>
     <div class="row-fluid">
         <label for="send_mail_heroids">英雄UID</label>
         <label>全服所有玩家: <input id="all_heroids" name="all_heroids" class="ace-switch" type="checkbox" onclick="check()"><span class="lbl"></span></label>

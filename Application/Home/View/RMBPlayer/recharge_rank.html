@@ -1,29 +1,55 @@
 <include file="./header" />
 <script type="text/javascript">
-function check(){
+function check(hidetype,hidevalue){
     var $start_date = $('#start_date').val();
     var $end_date = $('#end_date').val();
     if ($start_date == "" && $end_date == "") {
         alert('查询日期不能全为空,请检查输入!');
         return false;
     }
+    if ($('#home').hasClass('active')) {
+      hidetype=1;
+    }else if($('#profile').hasClass('active')){
+      hidetype=2;
+    }
+    $("#hidetype").val(hidetype);
+    $("#hidevalue").val(hidevalue);
     $('#recharge_rank').submit();
 }
 </script>
+    <form name="recharge_rank" id="recharge_rank" action="recharge_rank" method="post">
 <div class="row-fluid">
     <h3 class="header smaller lighter blue">{$title}</h3>
-    <form name="recharge_rank" id="recharge_rank" action="recharge_rank" method="post">
-        <div class="controls">
-            <label>平台&游戏服:
-                <?php
-					$index=0;
-					foreach ($servers as $server) {
-						echo "<input id='checkbox[]"."' name='checkbox[]"."' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."&".$server['server_name']."</span>";
-                $index++;
+    <div class="controls">
+        <label>平台:
+            <?php
+              foreach ($platforms as $platform) {
+                echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$platform['platform']." ";
+                foreach ($choose_platforms as $choose_platform) {
+                  if($choose_platform==$platform['platform']){
+                    echo " checked ";
+                    break;
+                  }
                 }
-                ?>
-            </label>
-        </div>
+                echo " /><span class='lbl'>".$platform['name']."</span>";
+              }
+            ?>
+        </label>
+        <label>游戏服:
+            <?php
+              foreach ($servers as $server) {
+                echo "<input id='checkbox_servers[]' name='checkbox_servers[]' class='ace-checkbox-2' type='checkbox' value=".$server['server_id']." ";
+                foreach ($choose_servers as $choose_server) {
+                  if($choose_server==$server['server_id']){
+                    echo " checked ";
+                    break;
+                  }
+                }
+                echo " /><span class='lbl'>".$server['server_name']."</span>";
+              }
+            ?>
+        </label>
+    </div>
 
         <div class="row-fluid input-append date">
             <input type="button" class="btn btn-small" value="开始日期"/>
@@ -31,20 +57,30 @@ function check(){
             <input type="button" class="btn btn-small" value="结束日期"/>
             <input class="span2" id="end_date"  name="end_date" data-format="yyyy-MM-dd" type="date" <?php if($end_date!=0) echo "value='".$end_date."'";?> placeholder="结束日期"/>
             <button class="btn btn-small" type="reset">重置</button>
-            <input type="button" class="btn btn-small" value="查询" onclick="check();"/>
+            <input type="button" class="btn btn-small" value="查询" onclick="check(1,1);"/>
         </div>
-    </form>
 </div>
 
 <div class="tabbable">
     <ul class="nav nav-tabs" id="myTab">
-        <li class="active"><a data-toggle="tab" href="#home">单笔排行</a></li>
-        <li class=""><a data-toggle="tab" href="#profile">累计排行</a></li>
+        <li id="home" name="home" <?php if($hidetype==1) echo "class='active'"; else echo "class=''";?>><a data-toggle="tab" href="#home">单笔排行</a></li>
+        <li id="profile" name="profile" <?php if($hidetype==2) echo "class='active'"; else echo "class=''"; ?> ><a data-toggle="tab" href="#profile">累计排行</a></li>
     </ul>
     <div class="tab-content">
-        <div id="home" class="tab-pane active">
+        <div id="home" <?php if($hidetype==1) echo "class='tab-pane active'"; else echo "class='tab-pane'"; ?>>
             <div class="row-fluid">
-                <div class="table-header"><?php if(count($pay_orders)>0) echo "单笔排行";else echo "没有数据";?></div>
+              <div class="table-header"><?php if(count($pay_orders)>0) echo "单笔排行";else echo "没有数据";?></div>
+              <div class="span6">
+                <div id="table_report_length" class="dataTables_length"><label>每页
+                  <select size="1" id="table_report_length"  name="table_report_length" aria-controls="table_report">
+                    <option value="10" <?php if($page_size==10) echo "selected='selected'";?> >10</option>
+                    <option value="25" <?php if($page_size==25) echo "selected='selected'";?> >25</option>
+                    <option value="50" <?php if($page_size==50) echo "selected='selected'";?> >50</option>
+                    <option value="100" <?php if($page_size==100) echo "selected='selected'";?> >100</option>
+                  </select>记录</label>
+                  </div>
+                </div>
+
                 <table id="table_report1" class="table table-striped table-bordered table-hover">
                     <thead>
                     <tr>
@@ -83,11 +119,51 @@ function check(){
                     ?>
                     </tbody>
                 </table>
+                <div class="row-fluid">
+                  <div class="span6">
+                    <div class="dataTables_info" id="table_report_info">共 <?php echo ceil($size/$page_size);?> 页 / <?php echo $size;?> 条记录 当前页是：<?php echo $page;?></div>
+                  </div>
+                  <div class="span6">
+                    <div class="dataTables_paginate paging_bootstrap pagination">
+                      <ul>
+                        <li class="next"><a href='javascript:void(0)' onclick="check(1,1);">首页</a></li>
+                        <?php
+                          $total=ceil($size/$page_size);
+                          if($page-1>0){
+                            echo "<li class='next'><a href='javascript:void(0)' onclick='check(1,".($page-1).");'>上一页</a></li>";
+                          }
+                          echo "<li class='active'><a href='javascript:void(0)' onclick='check(1,".($page).");'>".($page)."</a></li>";
+                          if($page+1<=$total){
+                            echo "<li><a href='javascript:void(0)' onclick='check(1,".($page+1).");'>".($page+1)."</a></li>";
+                          }
+                          if($page+2<=$total){
+                            echo "<li><a href='javascript:void(0)' onclick='check(1,".($page+2).");'>".($page+2)."</a></li>";
+                          }
+                          if($page+1<=$total){
+                            echo "<li class='next'><a href='javascript:void(0)' onclick='check(1,".($page+1).");'>下一页</a></li>";
+                          }
+                        ?>
+                        <li class="next"><a href='javascript:void(0)' onclick="check(1,<?php echo $total;?>);">末页</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
             </div>
         </div>
-        <div id="profile" class="tab-pane">
+        <div id="profile" <?php if($hidetype==2) echo "class='tab-pane active'"; else echo "class='tab-pane'"; ?>>
             <div class="row-fluid">
-                <div class="table-header"><?php if(count($pay_ranks)>0) echo "累计排行";else echo "没有数据";?></div>
+              <div class="table-header"><?php if(count($pay_ranks)>0) echo "累计排行";else echo "没有数据";?></div>
+              <div class="span6">
+                <div id="table_report_length" class="dataTables_length"><label>每页
+                  <select size="1" id="table_report_length"  name="table_report_length" aria-controls="table_report">
+                    <option value="10" <?php if($page_size==10) echo "selected='selected'";?> >10</option>
+                    <option value="25" <?php if($page_size==25) echo "selected='selected'";?> >25</option>
+                    <option value="50" <?php if($page_size==50) echo "selected='selected'";?> >50</option>
+                    <option value="100" <?php if($page_size==100) echo "selected='selected'";?> >100</option>
+                  </select>记录</label>
+                  </div>
+                </div>
+
                 <table id="table_report2" class="table table-striped table-bordered table-hover">
                     <thead>
                     <tr>
@@ -115,11 +191,43 @@ function check(){
                     ?>
                     </tbody>
                 </table>
+                <div class="row-fluid">
+                  <div class="span6">
+                    <div class="dataTables_info" id="table_report_info">共 <?php echo ceil($size/$page_size);?> 页 / <?php echo $size;?> 条记录 当前页是：<?php echo $page;?></div>
+                  </div>
+                  <div class="span6">
+                    <div class="dataTables_paginate paging_bootstrap pagination">
+                      <ul>
+                        <li class="next"><a href='javascript:void(0)' onclick="check(2,1);">首页</a></li>
+                        <?php
+                          $total=ceil($size/$page_size);
+                          if($page-1>0){
+                            echo "<li class='next'><a href='javascript:void(0)' onclick='check(2,".($page-1).");'>上一页</a></li>";
+                          }
+                          echo "<li class='active'><a href='javascript:void(0)' onclick='check(2,".($page).");'>".($page)."</a></li>";
+                          if($page+1<=$total){
+                            echo "<li><a href='javascript:void(0)' onclick='check(2,".($page+1).");'>".($page+1)."</a></li>";
+                          }
+                          if($page+2<=$total){
+                            echo "<li><a href='javascript:void(0)' onclick='check(2,".($page+2).");'>".($page+2)."</a></li>";
+                          }
+                          if($page+1<=$total){
+                            echo "<li class='next'><a href='javascript:void(0)' onclick='check(2,".($page+1).");'>下一页</a></li>";
+                          }
+                        ?>
+                        <li class="next"><a href='javascript:void(0)' onclick="check(2,<?php echo $total;?>);">末页</a></li>
+                      </ul>
+
+                    </div>
+                  </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
+<input type="hidden" id="hidetype" name="hidetype"/>
+<input type="hidden" id="hidevalue" name="hidevalue"/>
+</form>
 <script type="text/javascript">
     var ex1 = new tableSort('table_report1',1,2,999,'','','');
     var ex2 = new tableSort('table_report2',1,2,999,'','','');

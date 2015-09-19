@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: havens
- * Date: 15-7-14
- * Time: 上午11:19
- */
 $conf=array();
 $conf ['550010000']['name'] ='暴击伤害提高20%';
 $conf ['550010001']['name'] ='暴击伤害提高35%';

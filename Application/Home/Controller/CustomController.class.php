@@ -14,6 +14,18 @@ class CustomController extends LayoutController {
 		$this->assign ( 'active_open_id', $menu['pid']);
 		$this->assign ( 'url', $url);
 
+		$servers=$this->get_all_server();
+		$db_gm=$this->get_gmserver();
+		$platforms=$this->get_all_platforms();
+		//servers
+		$values=$_POST['checkbox'];
+		if(!empty($values)){
+			F($url.'values',$values);
+		}else{
+			$values = F($url.'values');//从缓存获取已选择服务器
+		}
+		$db_user=$this->get_dbuser();
+
 		$heroids = $_POST['punish_heroids'];
 
 		$punish_submit = $_POST['punish_submit_btn'];//10惩罚20解除
@@ -121,6 +133,8 @@ class CustomController extends LayoutController {
 
 
 		$this->assign ( 'punish_list', $punish_list );
+		$this->assign ( 'choose_servers', $values );
+		$this->assign ( 'servers', $servers );
 		$this->display ();
 	}
 

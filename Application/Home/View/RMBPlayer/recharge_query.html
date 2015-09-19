@@ -22,14 +22,14 @@
             <input class="span1" id="heroId"  name="heroId" type="number" placeholder="英雄UID"/>
             <input type="button" class="btn btn-small" value="英雄名称"/>
             <input class="span1" id="heroName"  name="heroName" type="text" placeholder="英雄名称"/>
-            <input type="button" class="btn btn-small" value="平台和服务器"/>
-            <select id="db_select" name="db_select" class="span1">
-            <?php
-            foreach($servers as $server){
-                echo "<option value=".$server['id'].">".$server['channel_name']."_".$server['server_name']."</option>";
-            }
-            ?>
-            </select>
+            <input type="button" class="btn btn-small" value="游戏服"/>
+      			<select id="server_select" name="server_select" class="span1">
+      			<?php
+      			foreach($servers as $server){
+      					echo "<option value=".$server['server_id'].">".$server['server_name']."</option>";
+      			}
+      			?>
+      			</select>
             <input type="button" class="btn btn-small" value="订单号"/>
             <input class="span2" id="orderId"  name="orderId" type="number" placeholder="订单号"/>
         </div>

@@ -1,11 +1,11 @@
-<include file="./header" />	
-<script type="text/javascript">	
+<include file="./header" />
+<script type="text/javascript">
 $(function() {
 	new Highcharts.Chart({
         chart: {
             renderTo: 'chart_pie',  //饼状图关联html元素id值
 			//defaultSeriesType: 'pie', //默认图表类型为饼状图
-			plotBackgroundColor: 'white',//背景颜色  
+			plotBackgroundColor: 'white',//背景颜色
 			//plotBackgroundColor: '#ffc',  //设置图表区背景色
 			type: 'column',
             plotShadow: true   //设置阴影
@@ -20,7 +20,7 @@ $(function() {
         },
         xAxis: {
             categories: [
-			<?php  
+			<?php
 					foreach ($new_users as $newuser) {
 					echo "'".$newuser['day']."',";
 			}?>
@@ -55,13 +55,13 @@ $(function() {
         },
         series: [{
             name: '新增角色数',
-            data: [<?php  
+            data: [<?php
             		foreach ($new_users as $newuser) {
 					echo $newuser['role'].",";
         }?>]
         }, {
             name: '新增用户数',
-            data: [<?php  
+            data: [<?php
             		foreach ($new_users as $newuser) {
         		echo $newuser['user'].",";
         }?>]
@@ -78,21 +78,26 @@ function check(){
 	}
 	$('#new_user').submit();
 }
-</script>				
+</script>
 <div class="row-fluid">
 	<h3 class="header smaller lighter blue">{$title}</h3>
 
 	<form name="new_user" id="new_user" action="new_user" method="post">
 		<div class="controls">
-			<label>平台:
-				<?php
-				$index=0;
-				foreach ($servers as $server) {
-					echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."</span>";
-					$index++;
-				}
-				?>
-			</label>
+				<label>平台:
+						<?php
+							foreach ($platforms as $platform) {
+								echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$platform['platform']." ";
+								foreach ($choose_platforms as $choose_platform) {
+									if($choose_platform==$platform['platform']){
+										echo " checked ";
+										break;
+									}
+								}
+								echo " /><span class='lbl'>".$platform['name']."</span>";
+							}
+						?>
+				</label>
 		</div>
 
 		<div class="row-fluid input-append date">

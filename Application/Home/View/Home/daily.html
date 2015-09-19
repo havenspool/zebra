@@ -16,11 +16,16 @@
         <div class="controls">
             <label>平台:
                 <?php
-				$index=0;
-				foreach ($servers as $server) {
-					echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."</span>";
-                $index++;
-                }
+          				foreach ($platforms as $platform) {
+          					echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$platform['platform']." ";
+                    foreach ($choose_platforms as $choose_platform) {
+                      if($choose_platform==$platform['platform']){
+                        echo " checked ";
+                        break;
+                      }
+                    }
+                    echo " /><span class='lbl'>".$platform['name']."</span>";
+                  }
                 ?>
             </label>
         </div>

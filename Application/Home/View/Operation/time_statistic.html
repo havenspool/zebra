@@ -217,20 +217,25 @@ function check(){
 	}
 	$('#time_statistic').submit();
 }
-</script>				
+</script>
 <div class="row-fluid">
 	<h3 class="header smaller lighter blue">{$title}</h3>
 	<form name="time_statistic" id="time_statistic" action="time_statistic" method="post">
 		<div class="controls">
-			<label>平台&游戏服:
-				<?php
-                $index=0;
-                foreach ($servers as $server) {
-                    echo "<input id='checkbox[]"."' name='checkbox[]"."' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."&".$server['server_name']."</span>";
-					$index++;
-				}
-				?>
-			</label>
+				<label>游戏服:
+						<?php
+							foreach ($servers as $server) {
+								echo "<input id='checkbox_servers[]' name='checkbox_servers[]' class='ace-checkbox-2' type='checkbox' value=".$server['server_id']." ";
+								foreach ($choose_servers as $choose_server) {
+									if($choose_server==$server['server_id']){
+										echo " checked ";
+										break;
+									}
+								}
+								echo " /><span class='lbl'>".$server['server_name']."</span>";
+							}
+						?>
+				</label>
 		</div>
 
 		<div class="controls">
@@ -334,7 +339,7 @@ function check(){
 		</tbody>
 	</table>
 </div>
-<script type="text/javascript">   
-var ex1 = new tableSort('table_report',1,2,999,'up','down','hov');   
-</script> 
+<script type="text/javascript">
+var ex1 = new tableSort('table_report',1,2,999,'up','down','hov');
+</script>
 <include file="./footer" />

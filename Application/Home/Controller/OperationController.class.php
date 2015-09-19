@@ -37,12 +37,16 @@ class OperationController extends LayoutController {
 		if($_POST['send_mail_title']=="") $flag=false;
 		if($_POST['send_mail_content']=="") $flag=false;
 
-		$values=$_POST['checkbox'];
 		$servers=$this->get_all_server();
-		$checks=$this->choose_server($values);
+		$db_gm=$this->get_gmserver();
+		//servers
+		$choose_servers=$_POST['checkbox_servers'];
+		if(empty($choose_servers)) $flag=false;
+		$server=$this->get_server_from_id($choose_servers[0]);
+		if(empty($server)) $flag=false;
 
 		if($flag){
-			while(count($send_mail_list)+count($heroidsarr)>20){
+			while(count($send_mail_list)+count($heroidsarr)>50){
 				array_shift($send_mail_list);
 			}
 			//全服或指定英雄
@@ -67,11 +71,8 @@ class OperationController extends LayoutController {
 					"num5" => trim($numsarr[4])
 				);
 				$status=array();
-				foreach ($checks as $check){
-					$server=$this->get_server_from_id($check['plat_id']);
-					$this->conn_server($server['host'],$server['port'],$sendData);
-					$status['name']=$status['name'].$server['channel_name']."_".$server['server_name'].",";
-				}
+				$this->conn_server($server['host'],$server['port'],$sendData);
+				$status['name']=$status['name'].$server['server_name'].",";
 
 				$send_mail['hero_id']=" 游戏服: ".$status['name']." 全服发送 ";
 				if($midsarr[0]!=0&&$numsarr[0]!=0)	$send_mail['mid1']="物品MID:".$midsarr[0]." 数量".$numsarr[0];
@@ -104,10 +105,8 @@ class OperationController extends LayoutController {
 						"attach5" => trim($midsarr[4]),
 						"num5" => trim($numsarr[4])
 					);
-					foreach ($checks as $check){
-						$server=$this->get_server_from_id($check['plat_id']);
-						$this->conn_server($server['host'],$server['port'],$sendData);
-					}
+
+					$this->conn_server($server['host'],$server['port'],$sendData);
 
 					$send_mail['hero_id']=" 英雄UID: ".$heroidsarr[$index];
 					//$send_mail['hero_id']=$heroidsarr[$index];
@@ -128,7 +127,7 @@ class OperationController extends LayoutController {
 		F('send_mail_list',$send_mail_list);//保存数据到缓存
 		//$this->assign ('send_mail_list', $send_mail_list );
 		if($flag) header("Location:/zebra/Home/Operation/send_mail_list");
-		$this->assign ( 'checks', $checks );
+		$this->assign ( 'choose_servers', $values );
 		$this->assign ( 'servers', $servers );
 		$this->display ();
     }
@@ -244,10 +243,14 @@ class OperationController extends LayoutController {
 		$content = $_POST['send_board_online_content'];
 		if($content=="") $flag=false;
 
-		$values=$_POST['checkbox'];
 		$servers=$this->get_all_server();
-		$checks=$this->choose_server($values);
-
+		$choose_servers=$_POST['checkbox_servers'];
+		if(!empty($choose_servers)){
+			F($url.'choose_servers',$choose_servers);
+		}else{
+			$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
+		}
+		if(empty($choose_servers)) $flag=false;
 		if($flag){
 			$sendData = array (
 							"cmd" => "sys/announcement",
@@ -255,10 +258,12 @@ class OperationController extends LayoutController {
 							"pwd" => "b6dfea72ba631c88abe4a1d17114bfcf",
 							"comment" => $content);
 			$status=array();
-			foreach ($checks as $check){
-				$server=$this->get_server_from_id($check['plat_id']);
+			foreach ($choose_servers as $value) {
+				// $value as server_id
+				$server=$this->get_server_from_id($value);
+				if(empty($server)) continue;
 				$stat=$this->conn_server($server['host'],$server['port'],$sendData);
-				$stat['name']=$server['channel_name']."_".$server['server_name'];
+				$stat['name']=$server['server_name'];
 				array_push($status, $stat);
 			}
 
@@ -274,7 +279,7 @@ class OperationController extends LayoutController {
 			if(empty($send_board_list)){
 				$send_board_list=array();
 			}
-			while(count($send_board_list)+1>20){
+			while(count($send_board_list)+1>50){
 				array_shift($send_board_list);
 			}
 			$send_board=array();
@@ -286,7 +291,7 @@ class OperationController extends LayoutController {
 			F('send_board_list',$send_board_list);//保存数据到缓存
 		}
 		if($flag) header("Location:/zebra/Home/Operation/send_board_list");
-		$this->assign ( 'checks', $checks );
+		$this->assign ( 'choose_servers', $choose_servers );
 		$this->assign ( 'servers', $servers );
 		$this->display ();
 	}
@@ -393,8 +398,12 @@ class OperationController extends LayoutController {
 		if($_POST['currency_radio']=='') $currency_type=0;
 
 		$servers=$this->get_all_server();
-		$values=$_POST['checkbox'];
-		$checks=$this->choose_server($values);
+		$choose_servers=$_POST['checkbox_servers'];
+		if(!empty($choose_servers)){
+			F($url.'choose_servers',$choose_servers);
+		}else{
+			$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
+		}
 
 		$source_types=array();
 		$use_types=array();
@@ -402,11 +411,14 @@ class OperationController extends LayoutController {
 		$periods=array();
 
 		$currency_datas=array();
-		foreach ($checks as $check){
-			$server=$this->get_server_from_id($check['plat_id']);
-			$currency_data= M('currency_data','', $this->get_gmserver())->where(" platform=".$server['channel']." and server_id=".$server['server_id']." and currency_type=".$currency_type." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
+		foreach ($choose_servers as $value) {
+			// $value as server_id
+			$server=$this->get_server_from_id($value);
+			if(empty($server)) continue;
+			$currency_data= M('currency_data','', $this->get_gmserver())->where(" platform=".$server['platform']." and server_id=".$server['server_id']." and currency_type=".$currency_type." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
 			array_push($currency_datas, $currency_data);
 		}
+
 		$currencys=$this->get_currency_types();
 		$currency_type_str="";
 		if($currency_type==0) $currency_type_str="gold";
@@ -450,7 +462,7 @@ class OperationController extends LayoutController {
 		$this->assign ( 'periods', $periods );
 		$this->assign('start_date',$start_date);
 		$this->assign('end_date',$end_date);
-		$this->assign ( 'checks', $checks );
+		$this->assign ( 'choose_servers', $choose_servers );
 		$this->assign ( 'servers', $servers );
     $this->display ();
   }
@@ -464,8 +476,12 @@ class OperationController extends LayoutController {
 		$this->assign ( 'url', $url);
 
 		$servers=$this->get_all_server();
-		$values=$_POST['checkbox'];
-		$checks=$this->choose_server($values);
+		$choose_servers=$_POST['checkbox_servers'];
+		if(!empty($choose_servers)){
+			F($url.'choose_servers',$choose_servers);
+		}else{
+			$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
+		}
 
 		$vip_start = $_POST['vip_start'];
 		$vip_end = $_POST['vip_end'];
@@ -494,27 +510,17 @@ class OperationController extends LayoutController {
 		}
 
 		$hero_datas=array();
-		$platform=array();
-		$index=0;
-		foreach ($checks as $check){
-			$server=$this->get_server_from_id($check['plat_id']);
-			$platform[$index]=$server['channel'];
-			$index++;
-		}
-
-		$platform_sql="";
-		for($i=0;$i<$index;$i++){
-			$platform_sql=$platform_sql." platform=".$platform[$i]." or";
-		}
-		$platform_sql=substr($platform_sql,0,-2);
-
-		$dbs=$this->get_db();
-		foreach($dbs as $db){
+		$db_user=$this->get_dbuser();
+		foreach($choose_servers as $choose_server){
+			$server=$this->get_server_from_id($choose_server);
+			if(empty($server)) continue;
+			$db=$this->get_db_from_serverid($choose_server);
+			if(empty($db)) continue;
 			$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
-			$db_user="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_user'];
-			$hero_data = M('heroes','',$db_hero)->query("select * from heroes where ".$platform_sql." and vip >=".$vip_start." and vip <=".$vip_end." and level >=".$level_start." and level <=".$level_end." order by level desc,vip desc,_power desc limit ".($page_no-1)*$page_size.",".$page_no*$page_size);
+
+			$hero_data = M('heroes','',$db_hero)->query("select * from heroes where vip >=".$vip_start." and vip <=".$vip_end." and level >=".$level_start." and level <=".$level_end." order by level desc,vip desc,_power desc limit ".($page_no-1)*$page_size.",".$page_no*$page_size);
 			foreach($hero_data as $data){
-				$data['platform']=$this->get_platfrom_name_from_platfrom($data['platform']);
+				$data['platform']=$this->get_platform($data['platform'])['name'];
 				$data['type']=$this->getType($data['type']);
 				$pays = M ('payments', '', $db_user)->query("select count(orderid) times,sum(payamount*100)/100 pay from payments where heroid=".$data['id']);
 				if(count($pays)>0){
@@ -525,9 +531,15 @@ class OperationController extends LayoutController {
 			}
 		}
 
+		$this->assign ( 'vip_start', $vip_start );
+		$this->assign ( 'vip_end', $vip_end );
+		$this->assign ( 'level_start', $level_start );
+		$this->assign ( 'level_end', $level_end );
+		$this->assign ( 'page_no', $page_no );
+		$this->assign ( 'page_size', $page_size );
 
 		$this->assign ( 'hero_datas', $hero_datas );
-		$this->assign ( 'checks', $checks );
+		$this->assign ( 'choose_servers', $choose_servers );
 		$this->assign ( 'servers', $servers );
         $this->display ();
     }
@@ -540,10 +552,6 @@ class OperationController extends LayoutController {
 		$this->assign ( 'active_open_id', $menu['pid']);
 		$this->assign ( 'url', $url);
 
-		$servers=$this->get_all_server();
-		$values=$_POST['checkbox'];
-		$checks=$this->choose_server($values);
-
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
 
@@ -554,11 +562,20 @@ class OperationController extends LayoutController {
 		if($_POST['end_date']==""){
 			$end_date = date('Y-m-d',time());
 		}
+		$servers=$this->get_all_server();
+		$choose_servers=$_POST['checkbox_servers'];
+		if(!empty($choose_servers)){
+			F($url.'choose_servers',$choose_servers);
+		}else{
+			$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
+		}
 
 		$statistic_data=array();
-		foreach ($checks as $check){
-			$server=$this->get_server_from_id($check['plat_id']);
-			$data= M('statistics_time','', $this->get_gmserver())->where(" platform=".$server['channel']." and server_id=".$server['server_id']." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
+		foreach ($choose_servers as $value) {
+			// $value as server_id
+			$server=$this->get_server_from_id($value);
+			if(empty($server)) continue;
+			$data= M('statistics_time','', $this->get_gmserver())->where(" platform=".$server['platform']." and server_id=".$server['server_id']." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
 			array_push($statistic_data, $data);
 		}
 		//sfreepk:1sboss:2sonlinepk:3sofflinpk:4
@@ -588,7 +605,7 @@ class OperationController extends LayoutController {
 
 		$this->assign('start_date',$start_date);
 		$this->assign('end_date',$end_date);
-		$this->assign ( 'checks', $checks );
+		$this->assign ( 'choose_servers', $choose_servers );
 		$this->assign ( 'servers', $servers );
 		$this->assign('dates',$dates);
 		$this->display();
@@ -602,10 +619,13 @@ class OperationController extends LayoutController {
 		$this->assign ( 'active_open_id', $menu['pid']);
 		$this->assign ( 'url', $url);
 
-
 		$servers=$this->get_all_server();
-		$values=$_POST['checkbox'];
-		$checks=$this->choose_server($values);
+		$choose_servers=$_POST['checkbox_servers'];
+		if(!empty($choose_servers)){
+			F($url.'choose_servers',$choose_servers);
+		}else{
+			$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
+		}
 
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
@@ -622,10 +642,11 @@ class OperationController extends LayoutController {
 		if($_POST['type_radio']=="") $type_radio=1;
 		//sfreepk:1sboss:2sonlinepk:3sofflinpk:4
 		$statistic_data=array();
-
-		foreach ($checks as $check){
-			$server=$this->get_server_from_id($check['plat_id']);
-			$data= M('statistics_time','', $this->get_gmserver())->where(" platform=".$server['channel']." and server_id=".$server['server_id']." and type=".$type_radio." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
+		foreach ($choose_servers as $value) {
+			// $value as server_id
+			$server=$this->get_server_from_id($value);
+			if(empty($server)) continue;
+			$data= M('statistics_time','', $this->get_gmserver())->where(" platform=".$server['platform']." and server_id=".$server['server_id']." and type=".$type_radio." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
 			array_push($statistic_data, $data);
 		}
 
@@ -641,7 +662,7 @@ class OperationController extends LayoutController {
 		$this->assign('start_date',$start_date);
 		$this->assign('end_date',$end_date);
 		$this->assign ( 'type_radio', $type_radio);
-		$this->assign ( 'checks', $checks );
+		$this->assign ( 'choose_servers', $choose_servers );
 		$this->assign ( 'servers', $servers );
 		$this->assign('dates',$dates);
 		$this->display();
@@ -674,5 +695,279 @@ class OperationController extends LayoutController {
         $this->assign ( 'recharge', $recharge);
         $this->display ();
     }
+
+		public function hero_remainder() {
+			$this->menu ();
+			$url='/zebra/Home/Operation/hero_remainder';
+			$menu=$this->get_menu_from_url($url);
+			$this->assign ( 'title', $menu['title']);
+			$this->assign ( 'active_open_id', $menu['pid']);
+			$this->assign ( 'url', $url);
+
+			$servers=$this->get_all_server();
+			$platforms=$this->get_all_platforms();
+
+			$userName = $_POST['userName'];
+			$heroId = $_POST['heroId'];
+			$heroName = $_POST['heroName'];
+			$platform_id = $_POST['platform_select'];
+			$server_id = $_POST['server_select'];
+			$page_size = $_POST['table_report_length'];
+
+			$page=$_POST['hidevalue'];
+			if($page<=0){
+				$page=1;
+			}
+			if($page_size<=0){
+				$page_size=10;
+			}
+
+			$server=$this->get_db_from_serverid($server_id);
+			$hero_datas=array();
+			$size=0;
+			$db_user=$this->get_dbuser();
+			if(!empty($server)){
+				$db=$this->get_db_from_serverid($server['server_id']);
+				$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+
+				if($_POST['userName']==''&&$_POST['heroId']==''&&$_POST['heroName']==''){
+					//list
+					$all_heroids=M ('heroes', '', $db_hero)->query("select count(id) size from heroes where userid!=0 " );
+					if(count($all_heroids)>0){
+						$size=$all_heroids[0]['size'];
+					}
+
+					$heroes=M ('heroes', '', $db_hero)->query("select * from heroes where userid!=0 ORDER BY heroes.gold+heroes.bindGold desc LIMIT ".(($page-1)*$page_size)." , ".$page_size);
+					// print_r("select * from heroes where userid!=0 ORDER BY heroes.gold+heroes.bindGold desc LIMIT ".(($page-1)*$page_size)." , ".$page_size);
+					if(count($heroes)>0){
+							foreach($heroes as $hero){
+									$hero_datas[$hero['id']]['heroid']=$hero['id'];
+									$hero_datas[$hero['id']]['heroname']=$hero['name'];
+									$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
+									$hero_datas[$hero['id']]['vip']=$hero['vip'];
+									$hero_datas[$hero['id']]['level']=$hero['level'];
+									$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+									$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
+
+									$user = M ('users', '', $db_user)->query("select * from users where id=".$hero['userid'] );
+									if(count($user)>0)
+										$hero_datas[$hero['id']]['username']=$user[0]['name'];
+
+									$payment = M ('payments', '', $db_user)->query("select sum(payamount) pay FROM payments where status=1 and heroid=".$hero['id'] );
+									if(count($payment)>0)
+										$hero_datas[$hero['id']]['isrmb']='是';
+									else
+										$hero_datas[$hero['id']]['isrmb']='否';
+
+										$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and type=1 and heroid=".$hero['id'] );
+										if(count($heroes_uses)>0)
+											$hero_datas[$hero['id']]['recharge_gold']=$heroes_uses[0]['cost'];
+
+										$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and heroid=".$hero['id'] );
+										if(count($heroes_uses)>0)
+											$hero_datas[$hero['id']]['get_gold']=$heroes_uses[0]['cost'];
+
+
+										$heroes_stat = M ('heroes_stat', '', $db_hero)->query("select *,FROM_UNIXTIME( regtime, '%Y-%m-%d %H:%i:%S' ) regtime,FROM_UNIXTIME( lastlogintime, '%Y-%m-%d %H:%i:%S' ) lastlogintime from heroes_stat where heroid=".$hero['id'] );
+										if(count($heroes_stat)>0){
+											$hero_datas[$hero['id']]['regtime']=$heroes_stat[0]['regtime'];
+											$hero_datas[$hero['id']]['lastlogin']=$heroes_stat[0]['lastlogintime'];
+										}
+							}
+					}
+				}else{
+					//one
+					if($heroId!=0){
+						$heroes=M ('heroes', '', $db_hero)->query("select * from heroes where userid!=0 and id=".$heroId );
+						if(count($heroes)>0){
+								foreach($heroes as $hero){
+										$hero_datas[$hero['id']]['heroid']=$hero['id'];
+										$hero_datas[$hero['id']]['heroname']=$hero['name'];
+										$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
+										$hero_datas[$hero['id']]['vip']=$hero['vip'];
+										$hero_datas[$hero['id']]['level']=$hero['level'];
+										$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+										$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
+
+										$user = M ('users', '', $db_user)->query("select * from users where id=".$hero['userid'] );
+										if(count($user)>0)
+											$hero_datas[$hero['id']]['username']=$user[0]['name'];
+
+										$payment = M ('payments', '', $db_user)->query("select sum(payamount) pay FROM payments where status=1 and heroid=".$hero['id'] );
+										if(count($payment)>0)
+											$hero_datas[$hero['id']]['isrmb']='是';
+										else
+											$hero_datas[$hero['id']]['isrmb']='否';
+
+											$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and type=1 and heroid=".$hero['id'] );
+											if(count($heroes_uses)>0)
+												$hero_datas[$hero['id']]['recharge_gold']=$heroes_uses[0]['cost'];
+
+											$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and heroid=".$hero['id'] );
+											if(count($heroes_uses)>0)
+												$hero_datas[$hero['id']]['get_gold']=$heroes_uses[0]['cost'];
+
+											$heroes_stat = M ('heroes_stat', '', $db_hero)->query("select *,FROM_UNIXTIME( regtime, '%Y-%m-%d %H:%i:%S' ) regtime,FROM_UNIXTIME( lastlogintime, '%Y-%m-%d %H:%i:%S' ) lastlogintime from heroes_stat where heroid=".$hero['id'] );
+											if(count($heroes_stat)>0){
+												$hero_datas[$hero['id']]['regtime']=$heroes_stat[0]['regtime'];
+												$hero_datas[$hero['id']]['lastlogin']=$heroes_stat[0]['lastlogintime'];
+											}
+								}
+						}
+					}else if($heroName!=""){
+						$heroes=M ('heroes', '', $db_hero)->query("select * from heroes where userid!=0 and name='".$heroName."'" );
+						if(count($heroes)>0){
+								foreach($heroes as $hero){
+										$hero_datas[$hero['id']]['heroid']=$hero['id'];
+										$hero_datas[$hero['id']]['heroname']=$hero['name'];
+										$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
+										$hero_datas[$hero['id']]['vip']=$hero['vip'];
+										$hero_datas[$hero['id']]['level']=$hero['level'];
+										$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+										$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
+
+										$user = M ('users', '', $db_user)->query("select * from users where id=".$hero['userid'] );
+										if(count($user)>0)
+											$hero_datas[$hero['id']]['username']=$user[0]['name'];
+
+										$payment = M ('payments', '', $db_user)->query("select sum(payamount) pay FROM payments where status=1 and heroid=".$hero['id'] );
+										if(count($payment)>0)
+											$hero_datas[$hero['id']]['isrmb']='是';
+										else
+											$hero_datas[$hero['id']]['isrmb']='否';
+
+											$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and type=1 and heroid=".$hero['id'] );
+											if(count($heroes_uses)>0)
+												$hero_datas[$hero['id']]['recharge_gold']=$heroes_uses[0]['cost'];
+
+											$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and heroid=".$hero['id'] );
+											if(count($heroes_uses)>0)
+												$hero_datas[$hero['id']]['get_gold']=$heroes_uses[0]['cost'];
+
+											$heroes_stat = M ('heroes_stat', '', $db_hero)->query("select *,FROM_UNIXTIME( regtime, '%Y-%m-%d %H:%i:%S' ) regtime,FROM_UNIXTIME( lastlogintime, '%Y-%m-%d %H:%i:%S' ) lastlogintime from heroes_stat where heroid=".$hero['id'] );
+											if(count($heroes_stat)>0){
+												$hero_datas[$hero['id']]['regtime']=$heroes_stat[0]['regtime'];
+												$hero_datas[$hero['id']]['lastlogin']=$heroes_stat[0]['lastlogintime'];
+											}
+								}
+						}
+					}else if($userName!=""){
+						$users = M ('users', '', $db_user)->query("select * from users where name='".$userName."'" );
+						if(count($users)>0){
+							$heroes=M ('heroes', '', $db_hero)->query("select * from heroes where userid!=0 and userid=".$users[0]['id'] );
+							if(count($heroes)>0){
+									foreach($heroes as $hero){
+										$hero_datas[$hero['id']]['username']=$users[0]['name'];
+										$hero_datas[$hero['id']]['heroid']=$hero['id'];
+										$hero_datas[$hero['id']]['heroname']=$hero['name'];
+										$hero_datas[$hero['id']]['type']=$this->getType($hero['type']);
+										$hero_datas[$hero['id']]['vip']=$hero['vip'];
+										$hero_datas[$hero['id']]['level']=$hero['level'];
+										$hero_datas[$hero['id']]['platform']=$this->get_platform($hero['platform'])['name'];
+										$hero_datas[$hero['id']]['remainder_gold']=$hero['gold']+$hero['bindGold'];
+
+										$payment = M ('payments', '', $db_user)->query("select sum(payamount) pay FROM payments where status=1 and heroid=".$hero['id'] );
+										if(count($payment)>0)
+											$hero_datas[$hero['id']]['isrmb']='是';
+										else
+											$hero_datas[$hero['id']]['isrmb']='否';
+
+											$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and type=1 and heroid=".$hero['id'] );
+											if(count($heroes_uses)>0)
+												$hero_datas[$hero['id']]['recharge_gold']=$heroes_uses[0]['cost'];
+
+											$heroes_uses = M ('heroes_uses', '', $db_hero)->query("select sum(cost) cost from heroes_uses where costType=1 and countType=0 and heroid=".$hero['id'] );
+											if(count($heroes_uses)>0)
+												$hero_datas[$hero['id']]['get_gold']=$heroes_uses[0]['cost'];
+
+											$heroes_stat = M ('heroes_stat', '', $db_hero)->query("select *,FROM_UNIXTIME( regtime, '%Y-%m-%d %H:%i:%S' ) regtime,FROM_UNIXTIME( lastlogintime, '%Y-%m-%d %H:%i:%S' ) lastlogintime from heroes_stat where heroid=".$hero['id'] );
+											if(count($heroes_stat)>0){
+												$hero_datas[$hero['id']]['regtime']=$heroes_stat[0]['regtime'];
+												$hero_datas[$hero['id']]['lastlogin']=$heroes_stat[0]['lastlogintime'];
+											}
+									}
+							}
+						}
+					}
+				}
+			}
+
+			$this->assign ( 'page_size', $page_size );
+			$this->assign ( 'page', $page );
+			$this->assign ( 'size', $size );
+			$this->assign ( 'hero_datas', $hero_datas );
+			$this->assign ( 'platforms', $platforms );
+			$this->assign ( 'servers', $servers );
+	    $this->display ();
+		}
+
+		public function all_remainder() {
+			$this->menu ();
+			$url='/zebra/Home/Operation/all_remainder';
+			$menu=$this->get_menu_from_url($url);
+			$this->assign ( 'title', $menu['title']);
+			$this->assign ( 'active_open_id', $menu['pid']);
+			$this->assign ( 'url', $url);
+			$servers=$this->get_all_server();
+			$choose_servers=$_POST['checkbox_servers'];
+			if(!empty($choose_servers)){
+				F($url.'choose_servers',$choose_servers);
+			}else{
+				$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
+			}
+
+			$pie_datas=array();
+			$datas=array();
+			foreach ($choose_servers as $value) {
+				// $value as server_id
+				$server=$this->get_server_from_id($value);
+				if(empty($server)) continue;
+				$db=$this->get_db_from_serverid($server['server_id']);
+				if(empty($db)) continue;
+				$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold<1000 and platform=".$server['platform'] );
+				if(count($heroes)>0){
+					$pie_datas[1]+=$heroes[0]['count'];
+					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$datas[$server['server_id']]['server_name']=$server['server_name'];
+					$datas[$server['server_id']][1]+=$heroes[0]['count'];
+				}
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 1000 and 5000 and platform=".$server['platform'] );
+				if(count($heroes)>0){
+					$pie_datas[2]+=$heroes[0]['count'];
+					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$datas[$server['server_id']]['server_name']+=$server['server_name'];
+					$datas[$server['server_id']][2]+=$heroes[0]['count'];
+				}
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 5000 and 10000 and platform=".$server['platform'] );
+				if(count($heroes)>0){
+					$pie_datas[3]+=$heroes[0]['count'];
+					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$datas[$server['server_id']]['server_name']=$server['server_name'];
+					$datas[$server['server_id']][3]+=$heroes[0]['count'];
+				}
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 10000 and 100000 and platform=".$server['platform'] );
+				if(count($heroes)>0){
+					$pie_datas[4]+=$heroes[0]['count'];
+					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$datas[$server['server_id']]['server_name']=$server['server_name'];
+					$datas[$server['server_id']][4]+=$heroes[0]['count'];
+				}
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold>100000 and platform=".$server['platform'] );
+				if(count($heroes)>0){
+					$pie_datas[5]+=$heroes[0]['count'];
+					$datas[$server['server_id']]['platform_name']=$this->get_platform($server['platform'])['name'];
+					$datas[$server['server_id']]['server_name']=$server['server_name'];
+					$datas[$server['server_id']][5]+=$heroes[0]['count'];
+				}
+			}
+
+			$this->assign ( 'pie_datas', $pie_datas );
+			$this->assign ( 'datas', $datas );
+			$this->assign ( 'choose_servers', $choose_servers );
+			$this->assign ( 'servers', $servers );
+			$this->display ();
+		}
 
 }

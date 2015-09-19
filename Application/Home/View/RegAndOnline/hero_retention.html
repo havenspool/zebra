@@ -1,11 +1,11 @@
 <include file="./header" />
-<script type="text/javascript">	
+<script type="text/javascript">
 $(function() {
 	new Highcharts.Chart({
         chart: {
             renderTo: 'chart_pie',  //饼状图关联html元素id值
 			//defaultSeriesType: 'pie', //默认图表类型为饼状图
-			plotBackgroundColor: 'white',//背景颜色  
+			plotBackgroundColor: 'white',//背景颜色
 			//plotBackgroundColor: '#ffc',  //设置图表区背景色
 			type: 'column',
             plotShadow: true   //设置阴影
@@ -20,7 +20,7 @@ $(function() {
         },
         xAxis: {
             categories: [
-			<?php  
+			<?php
 					foreach ($retentions as $data) {
 					echo "'".date('Y-m-d', $data['date'])."',";
 			}?>
@@ -55,79 +55,79 @@ $(function() {
         },
         series: [{
             name: '次日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[1]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '三日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[2]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '四日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[3]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '五日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[4]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '六日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[5]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '七日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[6]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '十四日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[13]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '二十一日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[20]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '三十日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[29]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '六十日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[59]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '九十日留存',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[89]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '一百八十日',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[179]/$data[0])*100,2).",";
         }?>]
         }, {
             name: '三百六十五日',
-            data: [<?php  
+            data: [<?php
             		foreach ($retentions as $data) {
         		echo round(($data[364]/$data[0])*100,2).",";
         }?>]
@@ -145,20 +145,25 @@ function check(){
 	}
 	$('#hero_retention').submit();
 }
-</script>				
+</script>
 <div class="row-fluid">
 	<h3 class="header smaller lighter blue">{$title}</h3>
 	<form name="hero_retention" id="hero_retention" action="hero_retention" method="post">
 		<div class="controls">
-			<label>平台:
-				<?php
-				$index=0;
-				foreach ($servers as $server) {
-					echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$server['id']." ".$checks[$server['id']]['check']."/><span class='lbl'>".$server['channel_name']."</span>";
-					$index++;
-				}
-				?>
-			</label>
+				<label>平台:
+						<?php
+							foreach ($platforms as $platform) {
+								echo "<input id='checkbox[]' name='checkbox[]' class='ace-checkbox-2' type='checkbox' value=".$platform['platform']." ";
+								foreach ($choose_platforms as $choose_platform) {
+									if($choose_platform==$platform['platform']){
+										echo " checked ";
+										break;
+									}
+								}
+								echo " /><span class='lbl'>".$platform['name']."</span>";
+							}
+						?>
+				</label>
 		</div>
 
 		<div class="row-fluid input-append date">
@@ -236,7 +241,7 @@ function check(){
 		</tbody>
 	</table>
 </div>
-<script type="text/javascript">   
+<script type="text/javascript">
 	var ex1 = new tableSort('table_report',1,2,999,'up','down','hov');
-</script> 
+</script>
 <include file="./footer" />
