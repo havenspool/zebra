@@ -25,11 +25,6 @@ class OperationController extends LayoutController {
 		$midsarr = explode(';',$mids);
 		$numsarr = explode(';',$nums);
 
-		$send_mail_list = F('send_mail_list');//从缓存获取数据
-		if(empty($send_mail_list)){
-			$send_mail_list=array();
-		}
-
 		$flag=true;
 		if($heroids==0&&$all_heroids!="on") $flag=false;
 		if($mids==0) $flag=false;
@@ -44,11 +39,10 @@ class OperationController extends LayoutController {
 		if(empty($choose_servers)) $flag=false;
 		$server=$this->get_server_from_id($choose_servers[0]);
 		if(empty($server)) $flag=false;
-
 		if($flag){
-			while(count($send_mail_list)+count($heroidsarr)>50){
-				array_shift($send_mail_list);
-			}
+			// while(count($send_mail_list)+count($heroidsarr)>50){
+			// 	array_shift($send_mail_list);
+			// }
 			//全服或指定英雄
 			if($all_heroids=="on"){
 				$send_mail=array();
@@ -72,18 +66,16 @@ class OperationController extends LayoutController {
 				);
 				$status=array();
 				$this->conn_server($server['host'],$server['port'],$sendData);
-				$status['name']=$status['name'].$server['server_name'].",";
-
-				$send_mail['hero_id']=" 游戏服: ".$status['name']." 全服发送 ";
-				if($midsarr[0]!=0&&$numsarr[0]!=0)	$send_mail['mid1']="物品MID:".$midsarr[0]." 数量".$numsarr[0];
-				if($midsarr[1]!=0&&$numsarr[1]!=0)	$send_mail['mid2']="物品MID:".$midsarr[1]." 数量".$numsarr[1];
-				if($midsarr[2]!=0&&$numsarr[2]!=0)	$send_mail['mid3']="物品MID:".$midsarr[2]." 数量".$numsarr[2];
-				if($midsarr[3]!=0&&$numsarr[3]!=0)	$send_mail['mid4']="物品MID:".$midsarr[3]." 数量".$numsarr[3];
-				if($midsarr[4]!=0&&$numsarr[4]!=0)	$send_mail['mid5']="物品MID:".$midsarr[4]." 数量".$numsarr[4];
-				$send_mail['mail']="　邮件标题:".$title." 邮件内容:".$content;
-				$send_mail['time']=date ( 'Y-m-d H:i:s', time ());
-
-				array_push($send_mail_list, $send_mail);
+				//insert mail_record
+				if($status!=-1){
+					$mail=array('time'=>time(),'heroid'=>0,'server_id'=>$server['server_id'],'material_id'=>implode(",", $midsarr),
+					'material_num'=>implode(",", $numsarr),'title'=>$title,'content'=>$content,'username'=>$this->getUsername());
+					$Db = M('mail_record','', $this->get_gmserver());
+					$db_=$Db->where(" heroid=0 and server_id=".$server['server_id']." and time=".time())->select();
+					if(empty($db_)){
+						$Db->add($mail);
+					}
+				}
 			}else{
 				for($index=0;$index<count($heroidsarr);$index++){
 					$send_mail=array();
@@ -107,25 +99,19 @@ class OperationController extends LayoutController {
 					);
 
 					$this->conn_server($server['host'],$server['port'],$sendData);
-
-					$send_mail['hero_id']=" 英雄UID: ".$heroidsarr[$index];
-					//$send_mail['hero_id']=$heroidsarr[$index];
-					if($midsarr[0]!=0&&$numsarr[0]!=0)	$send_mail['mid1']="物品MID:".$midsarr[0]." 数量".$numsarr[0];
-					if($midsarr[1]!=0&&$numsarr[1]!=0)	$send_mail['mid2']="物品MID:".$midsarr[1]." 数量".$numsarr[1];
-					if($midsarr[2]!=0&&$numsarr[2]!=0)	$send_mail['mid3']="物品MID:".$midsarr[2]." 数量".$numsarr[2];
-					if($midsarr[3]!=0&&$numsarr[3]!=0)	$send_mail['mid4']="物品MID:".$midsarr[3]." 数量".$numsarr[3];
-					if($midsarr[4]!=0&&$numsarr[4]!=0)	$send_mail['mid5']="物品MID:".$midsarr[4]." 数量".$numsarr[4];
-					$send_mail['mail']="　邮件标题:".$title." 邮件内容:".$content;
-					$send_mail['time']=date ( 'Y-m-d H:i:s', time ());
-
-					array_push($send_mail_list, $send_mail);
+					if($status!=-1){
+						$mail=array('time'=>time(),'heroid'=>trim($heroidsarr[$index]),'server_id'=>$server['server_id'],'material_id'=>implode(",", $midsarr),
+						'material_num'=>implode(",", $numsarr),'title'=>$title,'content'=>$content,'username'=>$this->getUsername());
+						$Db = M('mail_record','', $this->get_gmserver());
+						$db_=$Db->where(' heroid='.trim($heroidsarr[$index])." and server_id=".$server['server_id']." and time=".time())->select();
+						if(empty($db_)){
+							$Db->add($mail);
+						}
+					}
 				}
 			}
-
 		}
 
-		F('send_mail_list',$send_mail_list);//保存数据到缓存
-		//$this->assign ('send_mail_list', $send_mail_list );
 		if($flag) header("Location:/zebra/Home/Operation/send_mail_list");
 		$this->assign ( 'choose_servers', $values );
 		$this->assign ( 'servers', $servers );
@@ -140,97 +126,59 @@ class OperationController extends LayoutController {
 		$this->assign ( 'active_open_id', $menu['pid']);
 		$this->assign ( 'url', $url);
 
-		$send_mail_list = F('send_mail_list');//从缓存获取数据
-			if(empty($send_mail_list)){
-				$send_mail_list=array();
+		$page_size = $_POST['table_report_length'];
+		$page=$_POST['hidevalue'];
+		if($page<=0){
+			$page=1;
 		}
+		$size=0;  //总页数
+		if($page_size<=0){
+			$page_size=10;
+		}
+
+		$send_mail_list=array();
+		$send_mail_size = M ('mail_record', '', $this->get_gmserver())->query("SELECT count(*) size FROM mail_record");
+		if(count($send_mail_size)>0){
+			$size=$send_mail_size[0]['size'];
+		}
+		$send_mails = M ('mail_record', '', $this->get_gmserver())->query("SELECT * FROM mail_record order by time desc LIMIT ".(($page-1)*$page_size)." , ".$page_size);
+		if(count($send_mails)>0){
+			$index=1;
+			foreach ($send_mails as $send_mail) {
+				$server=$this->get_server_from_id($send_mail['server_id']);
+				if(!empty($server)) $send_mail_list[$index]['server_name']=$server['server_name'];
+				$send_mail_list[$index]['server_id']=$send_mail['server_id'];
+				if($send_mail['heroid']==0){
+					$send_mail_list[$index]['heroid']=$send_mail['heroid'];
+					$send_mail_list[$index]['heroname']="全服";
+				}else{
+					$db=$this->get_db_from_serverid($send_mail['server_id']);
+					if(!empty($db)) {
+						$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+							$hero= M ('heroes', '', $db_hero)->query("SELECT name FROM heroes where id=".$send_mail['heroid']);
+							if(count($hero)>0){
+								$send_mail_list[$index]['heroname']=$hero[0]['name'];
+							}
+					}
+					$send_mail_list[$index]['heroid']=$send_mail['heroid'];
+				}
+
+				$send_mail_list[$index]['material_id']=$send_mail['material_id'];
+				$send_mail_list[$index]['material_num']=$send_mail['material_num'];
+				$send_mail_list[$index]['title']=$send_mail['title'];
+				$send_mail_list[$index]['content']=$send_mail['content'];
+				$send_mail_list[$index]['username']=$send_mail['username'];
+				$send_mail_list[$index]['time']=date("Y-m-d H:i:s", $send_mail['time']);
+				$index++;
+			}
+		}
+
+		$this->assign ( 'page_size', $page_size );
+		$this->assign ( 'page', $page );
+		$this->assign ( 'size', $size );
 		$this->assign ('send_mail_list', $send_mail_list );
 		$this->display ();
     }
-
-	public function send_board() {
-		$this->menu ();
-		$url='/zebra/Home/Operation/send_board';
-		$menu=$this->get_menu_from_url($url);
-		$this->assign ( 'title', $menu['title']);
-		$this->assign ( 'active_open_id', $menu['pid']);
-		$this->assign ( 'url', $url);
-
-		$flag=true;
-		$content = $_POST['send_board_content'];
-		if($content=="") $flag=false;
-
-		$start_date = $_POST['start_date'];
-		$end_date = $_POST['end_date'];
-		if($start_date==0) $start_date=date('Y-m-d',time());
-		if($end_date==0) $end_date=date('Y-m-d',time());
-
-		$start_hour = $_POST['start_hour'];
-		$start_min = $_POST['start_min'];
-		$start_sec = $_POST['start_sec'];
-		if($start_hour==0) $start_hour=0;
-		if($start_min==0) $start_min=0;
-		if($start_sec==0) $start_sec=0;
-
-		$end_hour = $_POST['end_hour'];
-		$end_min = $_POST['end_min'];
-		$end_sec = $_POST['end_sec'];
-		if($end_hour==0) $end_hour=0;
-		if($end_min==0) $end_min=0;
-		if($end_sec==0) $end_sec=0;
-
-		//if($start_date==$end_date&&$start_hour==$end_hour&&$start_min==$end_min&&$start_sec==$end_sec) $flag=false;
-
-		$fqc_day = $_POST['fqc_day'];
-		$fqc_hour = $_POST['fqc_hour'];
-		$fqc_min = $_POST['fqc_min'];
-		$fqc_sec = $_POST['fqc_sec'];
-		if($fqc_day==0) $fqc_day=0;
-		if($fqc_hour==0) $fqc_hour=0;
-		if($fqc_min==0) $fqc_min=0;
-		if($fqc_sec==0) $fqc_sec=0;
-
-		$times=0;
-		$fqc_time=$fqc_day*86400+$fqc_hour*3600+$fqc_min*60+$fqc_sec;
-		if($fqc_day==0&&$fqc_hour==0&&$fqc_min==0&&$fqc_sec==0) $times=1;
-
-		$start=strtotime($start_date." ".$start_hour.":".$start_min.":".$start_sec);
-		$end=strtotime($end_date." ".$end_hour.":".$end_min.":".$end_sec);
-
-		if($end<time()) $flag=false;
-		if($start==0&&$end==0) $flag=false;
-		if($start!=0&&$end!=0) $times=floor(($end-$start)/$fqc_time);
-
-//		echo $end-$start.":".$fqc_time;
-//		echo "flag:".$flag.":".$times;
-		if($flag&&$times>0){
-			//加入定时发送
-			$sendData = array (
-							"cmd" => "sys/announcement",
-							"user" => "hank",
-							"pwd" => "b6dfea72ba631c88abe4a1d17114bfcf",
-							"comment" => $content);
-			$this->create_process($start,$end,$fqc_time,$sendData,$times);
-
-//			$url='http://localhost/app/zebra_timer.php';
-//			$post_data = array ("start" => $start,"end" => $end,"_times" => $times
-//						,"interval" => $fqc_time,"host" => $this->get_host(),"port" => $this->get_port(),"comment" => $content);
-			//$this->curl_get($url,$post_data);
-		}
-
-		if($flag&&$times>0) header("Location:/zebra/Home/Operation/send_board_list");
-		$this->display ();
-	}
-
-	function curl_get($url,$post_data){
-		$ch=curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-		curl_exec($ch);
-		curl_close($ch);
-	}
 
 	public function send_board_online() {
 		$this->menu ();
@@ -263,32 +211,17 @@ class OperationController extends LayoutController {
 				$server=$this->get_server_from_id($value);
 				if(empty($server)) continue;
 				$stat=$this->conn_server($server['host'],$server['port'],$sendData);
-				$stat['name']=$server['server_name'];
-				array_push($status, $stat);
-			}
 
-			$result=array();
-			foreach($status as $stat){
-				$result['onlines']+=$stat['onlines'];
-				$result['name']=$result['name'].$stat['name'].",";
+				if($status!=-1){
+					$board=array('time'=>time(),'server_id'=>$value,'onlines'=>$stat['onlines'],
+					'content'=>$content,'username'=>$this->getUsername());
+					$Db = M('board_record','', $this->get_gmserver());
+					$db_=$Db->where(" server_id=".$value." and time=".time())->select();
+					if(empty($db_)){
+						$Db->add($board);
+					}
+				}
 			}
-			$result['comment']=$content;
-			//2015-06-30 15:36:03:游戏服：平台_游戏服 总在线人数：2 内容:hello,test;
-			//把发布放入缓存
-			$send_board_list = F('send_board_list');//从缓存获取数据
-			if(empty($send_board_list)){
-				$send_board_list=array();
-			}
-			while(count($send_board_list)+1>50){
-				array_shift($send_board_list);
-			}
-			$send_board=array();
-			$send_board['comment']=$result['comment'];
-			$send_board['onlines']=$result['onlines'];
-			$send_board['name']=$result['name'];
-			$send_board['time']=date ( 'Y-m-d H:i:s', time ());
-			array_push($send_board_list, $send_board);
-			F('send_board_list',$send_board_list);//保存数据到缓存
 		}
 		if($flag) header("Location:/zebra/Home/Operation/send_board_list");
 		$this->assign ( 'choose_servers', $choose_servers );
@@ -304,10 +237,40 @@ class OperationController extends LayoutController {
 		$this->assign ( 'active_open_id', $menu['pid']);
 		$this->assign ( 'url', $url);
 
-		$send_board_list = F('send_board_list');//从缓存获取数据
-		if(empty($send_board_list)){
-			$send_board_list=array();
+		$page_size = $_POST['table_report_length'];
+		$page=$_POST['hidevalue'];
+		if($page<=0){
+			$page=1;
 		}
+		$size=0;  //总页数
+		if($page_size<=0){
+			$page_size=10;
+		}
+
+		$send_board_list=array();
+		$send_board_size = M ('board_record', '', $this->get_gmserver())->query("SELECT count(*) size FROM board_record");
+		if(count($send_board_size)>0){
+			$size=$send_board_size[0]['size'];
+		}
+		$send_boards = M ('board_record', '', $this->get_gmserver())->query("SELECT * FROM board_record order by time desc LIMIT ".(($page-1)*$page_size)." , ".$page_size);
+		if(count($send_boards)>0){
+			$index=1;
+			foreach ($send_boards as $send_board) {
+				$server=$this->get_server_from_id($send_board['server_id']);
+				if(!empty($server)) $send_board_list[$index]['server_name']=$server['server_name'];
+				$send_board_list[$index]['server_id']=$send_board['server_id'];
+
+				$send_board_list[$index]['onlines']=$send_board['onlines'];
+				$send_board_list[$index]['content']=$send_board['content'];
+				$send_board_list[$index]['username']=$send_board['username'];
+				$send_board_list[$index]['time']=date("Y-m-d H:i:s", $send_board['time']);
+				$index++;
+			}
+		}
+
+		$this->assign ( 'page_size', $page_size );
+		$this->assign ( 'page', $page );
+		$this->assign ( 'size', $size );
 		$this->assign ('send_board_list', $send_board_list );
 		$this->display ();
 	}
@@ -415,7 +378,7 @@ class OperationController extends LayoutController {
 			// $value as server_id
 			$server=$this->get_server_from_id($value);
 			if(empty($server)) continue;
-			$currency_data= M('currency_data','', $this->get_gmserver())->where(" platform=".$server['platform']." and server_id=".$server['server_id']." and currency_type=".$currency_type." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
+			$currency_data= M('currency_data','', $this->get_gmserver())->where(" server_id=".$server['server_id']." and currency_type=".$currency_type." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
 			array_push($currency_datas, $currency_data);
 		}
 
@@ -576,7 +539,7 @@ class OperationController extends LayoutController {
 			// $value as server_id
 			$server=$this->get_server_from_id($value);
 			if(empty($server)) continue;
-			$data= M('statistics_time','', $this->get_gmserver())->where(" platform=".$server['platform']." and server_id=".$server['server_id']." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
+			$data= M('statistics_time','', $this->get_gmserver())->where(" server_id=".$server['server_id']." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
 			array_push($statistic_data, $data);
 		}
 		//sfreepk:1sboss:2sonlinepk:3sofflinpk:4
@@ -647,7 +610,7 @@ class OperationController extends LayoutController {
 			// $value as server_id
 			$server=$this->get_server_from_id($value);
 			if(empty($server)) continue;
-			$data= M('statistics_time','', $this->get_gmserver())->where(" platform=".$server['platform']." and server_id=".$server['server_id']." and type=".$type_radio." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
+			$data= M('statistics_time','', $this->get_gmserver())->where("  server_id=".$server['server_id']." and type=".$type_radio." and date >= UNIX_TIMESTAMP('".$start_date."') and date <= UNIX_TIMESTAMP('".$end_date."')")->select();
 			array_push($statistic_data, $data);
 		}
 
@@ -931,43 +894,33 @@ class OperationController extends LayoutController {
 				if(empty($db)) continue;
 				$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold<1000 and platform=".$server['platform'] );
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold<1000 " );
 				if(count($heroes)>0){
 					$pie_datas[1]+=$heroes[0]['count'];
-					$platform=$this->get_platform($server['platform']);
-					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][1]+=$heroes[0]['count'];
 				}
-				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 1000 and 5000 and platform=".$server['platform'] );
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 1000 and 5000 " );
 				if(count($heroes)>0){
 					$pie_datas[2]+=$heroes[0]['count'];
-					$platform=$this->get_platform($server['platform']);
-					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']+=$server['server_name'];
 					$datas[$server['server_id']][2]+=$heroes[0]['count'];
 				}
-				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 5000 and 10000 and platform=".$server['platform'] );
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 5000 and 10000  " );
 				if(count($heroes)>0){
 					$pie_datas[3]+=$heroes[0]['count'];
-					$platform=$this->get_platform($server['platform']);
-					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][3]+=$heroes[0]['count'];
 				}
-				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 10000 and 100000 and platform=".$server['platform'] );
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold between 10000 and 100000 " );
 				if(count($heroes)>0){
 					$pie_datas[4]+=$heroes[0]['count'];
-					$platform=$this->get_platform($server['platform']);
-					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][4]+=$heroes[0]['count'];
 				}
-				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold>100000 and platform=".$server['platform'] );
+				$heroes = M ( 'heroes', '', $db_hero)->query ( "SELECT count(id) count FROM heroes where userid!=0 and gold+bindgold>100000 " );
 				if(count($heroes)>0){
 					$pie_datas[5]+=$heroes[0]['count'];
-					$platform=$this->get_platform($server['platform']);
-					$datas[$server['server_id']]['platform_name']=$platform['name'];
 					$datas[$server['server_id']]['server_name']=$server['server_name'];
 					$datas[$server['server_id']][5]+=$heroes[0]['count'];
 				}

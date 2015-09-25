@@ -1,28 +1,86 @@
 <include file="./header" />
 
 <script type="text/javascript">
+function check(hidevalue){
+    $("#hidevalue").val(hidevalue);
+    $('#send_mail_list').submit();
+}
 </script>
     <div class="row-fluid">
         <a href="/zebra/Home/Operation/send_mail">点击发送邮件</a>
     </div>
 
+    <form name="send_mail_list" id="send_mail_list" action="send_mail_list" method="post">
     <div class="row-fluid">
-        <label class="control-label">奖励记录</label>
-        <?php
-			foreach($send_mail_list as $send_mail){
-				echo "<p>";
-        echo $send_mail['time'].": ";
-        echo $send_mail['hero_id'];
-        if($send_mail['mid1']!="") echo ":".$send_mail['mid1'];
-        if($send_mail['mid2']!="") echo ":".$send_mail['mid2'];
-        if($send_mail['mid3']!="") echo ":".$send_mail['mid3'];
-        if($send_mail['mid4']!="") echo ":".$send_mail['mid4'];
-        if($send_mail['mid5']!="") echo ":".$send_mail['mid5'];
-        echo $send_mail['mail'];
-        echo ";";
-        echo "</p>";
-        }
-        ?>
+        <label class="control-label">发布记录</label>
+    	</div>
+      <table id="table_report2" class="table table-striped table-bordered table-hover">
+          <thead>
+          <tr>
+              <th class="hidden-480">序号</th>
+              <th class="hidden-480">游戏服</th>
+              <th class="hidden-480">英雄名称</th>
+              <th class="hidden-480">物品ID</th>
+              <th class="hidden-480">物品数量</th>
+              <th class="hidden-480">邮件标题</th>
+              <th class="hidden-480">邮件内容</th>
+              <th class="hidden-480">发送账号</th>
+              <th class="hidden-480">操作时间</th>
+          </tr>
+          </thead>
+          <tbody>
+          <?php
+          $index=1;
+          foreach($send_mail_list as $data){
+              echo "<tr><td class='hidden-480'>".$index;
+              echo "</td><td class='hidden-480'>".$data['server_name'];
+              echo "</td><td class='hidden-480'>".$data['heroname'];
+              echo "</td><td class='hidden-480'>".$data['material_id'];
+              echo "</td><td class='hidden-480'>".$data['material_num'];
+              echo "</td><td class='hidden-480'>".$data['title'];
+              echo "</td><td class='hidden-480'>".$data['content'];
+              echo "</td><td class='hidden-480'>".$data['username'];
+              echo "</td><td class='hidden-480'>".$data['time'];
+              echo "</td></tr>";
+              $index++;
+          }
+          ?>
+          </tbody>
+      </table>
+      <div class="row-fluid">
+        <div class="span6">
+          <div class="dataTables_info" id="table_report_info">共 <?php echo ceil($size/$page_size);?> 页 / <?php echo $size;?> 条记录 当前页是：<?php echo $page;?></div>
+        </div>
+        <div class="span6">
+          <div class="dataTables_paginate paging_bootstrap pagination">
+            <ul>
+              <li class="next"><a href='javascript:void(0)' onclick="check(1);">首页</a></li>
+              <?php
+                $total=ceil($size/$page_size);
+                if($page-1>0){
+                  echo "<li class='next'><a href='javascript:void(0)' onclick='check(".($page-1).");'>上一页</a></li>";
+                }
+                echo "<li class='active'><a href='javascript:void(0)' onclick='check(".($page).");'>".($page)."</a></li>";
+                if($page+1<=$total){
+                  echo "<li><a href='javascript:void(0)' onclick='check(".($page+1).");'>".($page+1)."</a></li>";
+                }
+                if($page+2<=$total){
+                  echo "<li><a href='javascript:void(0)' onclick='check(".($page+2).");'>".($page+2)."</a></li>";
+                }
+                if($page+1<=$total){
+                  echo "<li class='next'><a href='javascript:void(0)' onclick='check(".($page+1).");'>下一页</a></li>";
+                }
+              ?>
+              <li class="next"><a href='javascript:void(0)' onclick="check(<?php echo $total;?>);">末页</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      	<input type="hidden" id="hidevalue" name="hidevalue"/>
     </div>
+    </form>
+    <script type="text/javascript">
+        var ex2 = new tableSort('table_report2',1,2,999,'','','');
+    </script>
 
 <include file="./footer" />

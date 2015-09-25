@@ -27,18 +27,6 @@
                 <input type="number" id="port" name="port" placeholder="端口">
             </div>
         </div>
-        <div class="control-group">
-          <label class="control-label" for="db_select">平台名称</label>
-          <div class="controls">
-              <select id="platform_select" name="platform_select">
-                  <?php
-                      foreach($platforms as $platform){
-                          echo "<option value=".$platform['platform'].">".$platform['name']."</option>";
-                      }
-                  ?>
-              </select>
-          </div>
-      </div>
     </div>
 
     <div class="row-fluid">

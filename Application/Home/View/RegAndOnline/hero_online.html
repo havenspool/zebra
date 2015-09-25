@@ -33,12 +33,12 @@ $(function() {
                     echo "['大乱斗人数',".$datas['freepkNum']."],";
                     echo "['主城场景人数',".$datas['sceneNum']."],";
                     echo "['世界BOSS人数',".$datas['bossNum']."],";
-                    echo "['PK人数',".$datas['pkNum']."],";
+                    // echo "['PK人数',".$datas['pkNum']."],";
                     echo "['副本人数',".$datas['dungeonNum']."],";
-                    echo "['材料副本人数',".$datas['resDungeonNum']."],";
-                    echo "['精英副本人数',".$datas['elitDungeonNum']."],";
+                    // echo "['材料副本人数',".$datas['resDungeonNum']."],";
+                    // echo "['精英副本人数',".$datas['elitDungeonNum']."],";
                     echo "['竞技之战人数',".$datas['offlinepkNum']."],";
-                    echo "['噬魂塔人数',".$datas['towerNum']."]";
+                    // echo "['噬魂塔人数',".$datas['towerNum']."]";
             ?>]
         },]
     });
@@ -69,17 +69,15 @@ function check(){
             <th class="hidden-480">游戏服名称</th>
             <th class="hidden-480">IP</th>
             <th class="hidden-480">端口</th>
-            <th class="hidden-480">平台ID</th>
-            <th class="hidden-480">平台名称</th>
             <th class="hidden-480">总在线人数</th>
             <th class="hidden-480">大乱斗人数</th>
             <th class="hidden-480">主城场景人数</th>
             <th class="hidden-480">世界BOSS人数</th>
-            <th class="hidden-480">PK人数</th>
+            <!-- <th class="hidden-480">PK人数</th> -->
             <th class="hidden-480">副本人数</th>
-            <th class="hidden-480">材料副本人数</th>
+            <!-- <th class="hidden-480">材料副本人数</th>
             <th class="hidden-480">精英副本人数</th>
-            <th class="hidden-480">噬魂塔人数</th>
+            <th class="hidden-480">噬魂塔人数</th> -->
             <th class="hidden-480">竞技之战人数</th>
         </tr>
         </thead>
@@ -101,17 +99,11 @@ function check(){
             echo "</td><td class='hidden-480'>".$stat['server_name'];
             echo "</td><td class='hidden-480'>".$stat['host'];
             echo "</td><td class='hidden-480'>".$stat['port'];
-            echo "</td><td class='hidden-480'>".$stat['platform'];
-            echo "</td><td class='hidden-480'>".$stat['platform_name'];
             echo "</td><td class='hidden-480'>".$stat['onlines'];
             echo "</td><td class='hidden-480'>".$stat['freepkNum'];
             echo "</td><td class='hidden-480'>".$stat['sceneNum'];
             echo "</td><td class='hidden-480'>".$stat['bossNum'];
-            echo "</td><td class='hidden-480'>".$stat['pkNum'];
             echo "</td><td class='hidden-480'>".$stat['dungeonNum'];
-            echo "</td><td class='hidden-480'>".$stat['resDungeonNum'];
-            echo "</td><td class='hidden-480'>".$stat['elitDungeonNum'];
-            echo "</td><td class='hidden-480'>".$stat['towerNum'];
             echo "</td><td class='hidden-480'>".$stat['offlinepkNum'];
             echo "</td></tr>";
             $index++;

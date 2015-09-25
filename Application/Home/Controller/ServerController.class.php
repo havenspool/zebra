@@ -21,23 +21,22 @@ class ServerController extends LayoutController {
         $server_name = $_POST['server_name'];
         $host = $_POST['host'];
         $port = $_POST['port'];
-        $platform = $_POST['platform_select'];
 
         if($_POST['server_id']==""||$_POST['server_name']==""||$_POST['host']==""
-            ||$_POST['port']==""||$_POST['platform_select']=="")
+            ||$_POST['port']=="")
             $flag=false;
 
         $server=array('server_id'=>$server_id,'server_name'=>$server_name,'host'=>$host,
-                    'port'=>$port,'platform'=>$platform);
+                    'port'=>$port);
 
         if($flag){
             $Server = M('Server','', $this->get_gmserver());
             $Server->add($server);
+            $this->reload_server();
         }
 
         if($flag) header("Location:/zebra/Home/Server/choose_server");
 
-        $this->assign ('platforms', $platforms);
         $this->display ();
     }
 
@@ -51,17 +50,15 @@ class ServerController extends LayoutController {
         $flag=true;
         $id = $_GET['id'];
         if($_GET['id']=="") $flag=false;
-        $platforms=$this->get_all_platforms();
         $save=true;
         $server_id = $_POST['server_id'];
         $server_name = $_POST['server_name'];
         $host = $_POST['host'];
         $port = $_POST['port'];
         $_id = $_POST['_id'];
-        $platform= $_POST['platform_select'];
 
         if($_POST['_id']==""||$_POST['server_id']==""||$_POST['server_name']==""||$_POST['host']==""
-            ||$_POST['port']==""||$_POST['platform_select']=="")
+            ||$_POST['port']=="")
             $save=false;
 
         if($flag) $save=false;
@@ -70,11 +67,12 @@ class ServerController extends LayoutController {
         if($flag){
             $Server = M('Server','', $this->get_gmserver());
             $server=$Server->where('id='.$id)->select();
+            $this->reload_server();
         }
 
         if($save){
             $server=array('server_id'=>$server_id,'server_name'=>$server_name,'host'=>$host,
-                        'port'=>$port,'platform'=>$platform);
+                        'port'=>$port);
             $Server = M('Server','', $this->get_gmserver());
             // $Server->where(' id='.$_id)->delete();
             // $Server->add($server);
@@ -84,7 +82,6 @@ class ServerController extends LayoutController {
 
         if($save) header("Location:/zebra/Home/Server/choose_server");
         $this->assign ('server', $server[0]);
-        $this->assign ('platforms', $platforms);
         $this->display ();
     }
 
@@ -102,6 +99,7 @@ class ServerController extends LayoutController {
         if($flag){
             $Server = M('Server','', $this->get_gmserver());
             $Server->where('id='.$id)->delete();
+            $this->reload_server();
         }
 
         if($flag) header("Location:/zebra/Home/Server/choose_server");
@@ -117,14 +115,7 @@ class ServerController extends LayoutController {
         $this->assign ( 'url', $url);
 
         $servers=$this->get_all_server();
-        $servers_all=array();
-        foreach($servers as $server){
-            $platform=$this->get_platform($server['platform']);
-            $server['platform_name']=$platform['name'];
-            array_push ($servers_all, $server);
-        }
-
-        $this->assign ('servers', $servers_all);
+        $this->assign ('servers', $servers);
         $this->display ();
     }
 
@@ -165,12 +156,14 @@ class ServerController extends LayoutController {
         if($flag){
             $Platform = M('Platforms','', $this->get_gmserver());
             $platform=$Platform->where(' platform='.$id)->select();
+            $this->reload_platform();
         }
 
         if($save){
             $platform=array('name'=>$platform_name,'enable'=>$enable);
             $Platform = M('Platforms','', $this->get_gmserver());
             $Platform->where(' platform='.$platform_id)->save($platform);
+            $this->reload_platform();
         }
 
         if($save) header("Location:/zebra/Home/Server/platform_manager");
@@ -201,6 +194,7 @@ class ServerController extends LayoutController {
         if($flag){
             $Platform = M('Platforms','', $this->get_gmserver());
             $Platform->add($platform);
+            $this->reload_platform();
         }
 
         if($flag) header("Location:/zebra/Home/Server/platform_manager");
@@ -223,6 +217,7 @@ class ServerController extends LayoutController {
         if($flag){
             $Platform = M('Platforms','', $this->get_gmserver());
             $Platform->where('platform='.$id)->delete();
+            $this->reload_platform();
         }
 
         if($flag) header("Location:/zebra/Home/Server/platform_manager");
@@ -269,12 +264,14 @@ class ServerController extends LayoutController {
         if($flag){
           $Db = M('Db','', $this->get_gmserver());
           $db=$Db->where(' server_id='.$id)->select();
+          $this->reload_db();
         }
 
         if($save){
           $db=array('server_id'=>$server_id,'user'=>$user,'pwd'=>$pwd,'host'=>$host,'port'=>$port,'db_hero'=>$db_hero);
           $Db = M('Db','', $this->get_gmserver());
           $Db->where(' server_id='.$server_id)->save($db);
+          $this->reload_db();
         }
 
         if($save) header("Location:/zebra/Home/Server/db_manager");
@@ -310,8 +307,10 @@ class ServerController extends LayoutController {
         if($flag){
             $Db = M('Db','', $this->get_gmserver());
             $db_=$Db->where(' server_id='.$server_id)->select();
-            if(empty($db_))
+            if(empty($db_)){
               $Db->add($db);
+              $this->reload_db();
+            }
         }
 
         if($flag) header("Location:/zebra/Home/Server/db_manager");
@@ -334,6 +333,7 @@ class ServerController extends LayoutController {
         if($flag){
             $Db = M('db','', $this->get_gmserver());
             $Db->where('server_id='.$id)->delete();
+            $this->reload_db();
         }
 
         if($flag) header("Location:/zebra/Home/Server/db_manager");

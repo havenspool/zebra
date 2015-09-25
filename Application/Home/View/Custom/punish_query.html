@@ -1,6 +1,22 @@
 <include file="./header" />
 
 <form name="punish_query" id="punish_query" action="punish_query" method="post">
+  <div class="controls">
+      <label>游戏服:
+          <?php
+            foreach ($servers as $server) {
+              echo "<input id='checkbox_servers' name='checkbox_servers' class='ace-checkbox-2' type='radio' value=".$server['server_id']." ";
+              foreach ($choose_servers as $choose_server) {
+                if($choose_server==$server['server_id']){
+                  echo " checked ";
+                  break;
+                }
+              }
+              echo " /><span class='lbl'>".$server['server_name']."</span>";
+            }
+          ?>
+      </label>
+  </div>
     <div class="row-fluid">
         <label for="form-field-8">英雄UID</label>
         <textarea class="span6" id="punish_heroids" name="punish_heroids" placeholder="英雄UID，多个UID用;隔开"></textarea>
@@ -20,11 +36,13 @@
                     echo "无惩罚;";
                 else{
                     if($punish['flog']==1){ echo " 禁言";
-                        if($punish['flogTime']!=0) echo " 时长:".$punish['flogTime']."秒;";
+                        if($punish['flogTime']!=0&&$punish['flogTime']!=1) echo " 时长:".$punish['flogTime']."秒;";
+                        else if($punish['flogTime']==1) echo " 已解除惩罚";
                     }else if($punish['flog']==2) echo " 永久禁言;";
 
                     if($punish['fbc']==1){ echo " 封号";
-                        if($punish['fbcTime']!=0) echo " 时长:".$punish['fbcTime']."秒;";
+                        if($punish['fbcTime']!=0&&$punish['fbcTime']!=1) echo " 时长:".$punish['fbcTime']."秒;";
+                        else if($punish['fbcTime']==1) echo " 已解除惩罚";
                     }else if($punish['fbc']==2) echo " 永久封号;";
 
                 }

@@ -305,78 +305,100 @@ class RMBPlayerController extends LayoutController {
 
         $pay_orders=array();
         $pay_ranks=array();
-        foreach ($values as $value){
-          foreach ($choose_servers as $choose_server){
-            $server=$this->get_server_from_id($choose_server);
-            if(empty($server)) continue;
-            if($value==$server['platform']){
-              $db=$this->get_db_from_serverid($server['server_id']);
+        $all_size=0;
+
+        $platform_str=" and u.platform in( ";
+        foreach ($values as $value) {
+          $platform_str=$platform_str.$value.",";
+        }
+        $platform_str=substr($platform_str,0,-1);
+        $platform_str=$platform_str." ) ";
+
+        $choose_servers_str=" and p.serverId in( ";
+        foreach ($choose_servers as $choose_server) {
+          $choose_servers_str=$choose_servers_str.$choose_server.",";
+        }
+        $choose_servers_str=substr($choose_servers_str,0,-1);
+        $choose_servers_str=$choose_servers_str." ) ";
+
+        if($hidetype==1){
+          $pays = M ('payments', '', $db_user)->query("SELECT count(p.orderId) size FROM payments p,users u where p.userid=u.id and p.payamount*100>0 ".$platform_str.$choose_servers_str." and p.status=1 ".$date_sql);
+          if(count($pays)>0){
+            $size=$pays[0]['size'];
+            $all_size+=$size;
+          }
+        }else if($hidetype==2){
+          $pays_data = M ('payments', '', $db_user)->query("SELECT count(distinct heroid) size FROM  payments p,users u where p.userid=u.id and p.payamount>0 ".$platform_str.$choose_servers_str.$date_sql);
+          if(count($pays_data)>0){
+            $size=$pays_data[0]['size'];
+            $all_size+=$size;
+          }
+        }
+        if($all_size<=$page_size){
+          $page_size=$all_size;
+        }
+
+
+        if($hidetype==1){
+          $pays = M ('payments', '', $db_user)->query("SELECT p.* FROM payments p,users u where p.userid=u.id and p.payamount*100>0 ".$platform_str.$choose_servers_str." and p.status=1 ".$date_sql."  order by p.payamount*100 desc LIMIT ".(($page-1)*$page_size)." , ".$page_size);
+          foreach($pays as $pay){
+              $db=$this->get_db_from_serverid($pay['serverid']);
               if(empty($db)) continue;
               $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-              if($hidetype==1){
-                $pays = M ('payments', '', $db_user)->query("SELECT count(orderId) size FROM payments where payamount*100>0 and status=1 ".$date_sql);
-                if(count($pays)>0){
-                  $size=$pays[0]['size'];
-                }
-                $pays = M ('payments', '', $db_user)->query("SELECT * FROM payments where payamount*100>0 and status=1 ".$date_sql."  order by payamount*100 desc LIMIT ".(($page-1)*$page_size)." , ".$page_size);
-                foreach($pays as $pay){
-                    $hero = M ('heroes', '', $db_hero)->query("select * from heroes where userId=".$pay['userid'] );
-                    if(count($hero)>0){
-                      $user=M ('users', '', $db_user)->query("select * from users where id=".$pay['userid']);
+              $hero = M ('heroes', '', $db_hero)->query("select * from heroes where id=".$pay['heroid'] );
+              if(count($hero)>0){
+                $user=M ('users', '', $db_user)->query("select * from users where id=".$pay['userid']);
 
-                      $pay_orders[$pay['orderid']]['timestamp']=date('Y-m-d',$pay['timestamp']);
-                      $pay_orders[$pay['orderid']]['orderid']=$pay['orderid'];
-                      $pay_orders[$pay['orderid']]['payamount']=round($pay['payamount'],2);
-                      $pay_orders[$pay['orderid']]['paytype']=$pay['payid'];
-                      $pay_orders[$pay['orderid']]['channel']=$pay['type'];
-                      $pay_orders[$pay['orderid']]['status']=$pay['status'];
+                $pay_orders[$pay['orderid']]['timestamp']=date('Y-m-d',$pay['timestamp']);
+                $pay_orders[$pay['orderid']]['orderid']=$pay['orderid'];
+                $pay_orders[$pay['orderid']]['payamount']=round($pay['payamount'],2);
+                $pay_orders[$pay['orderid']]['paytype']=$pay['payid'];
+                $pay_orders[$pay['orderid']]['channel']=$pay['type'];
+                $pay_orders[$pay['orderid']]['status']=$pay['status'];
 
-                      $pay_orders[$pay['orderid']]['username']=$user[0]['name'];
-                      $platform=$this->get_platform($hero[0]['platform']);
-                      $pay_orders[$pay['orderid']]['platform']=$platform['name'];
-                      $pay_orders[$pay['orderid']]['heroid']=$hero[0]['id'];
-                      $pay_orders[$pay['orderid']]['heroname']=$hero[0]['name'];
-                      $pay_orders[$pay['orderid']]['type']=$this->getType($hero[0]['type']);
-                      $pay_orders[$pay['orderid']]['vip']=$hero[0]['vip'];
-                      $pay_orders[$pay['orderid']]['level']=$hero[0]['level'];
-                    }
-                }
-              }else if($hidetype==2){
-                $pays_data = M ('payments', '', $db_user)->query("SELECT count(distinct heroid) size FROM  payments  where payamount>0 ".$date_sql);
-                if(count($pays_data)>0){
-                  $size=$pays_data[0]['size'];
-                }
-                  $pays_data = M ('payments', '', $db_user)->query("SELECT *,sum(payamount*100) payamount FROM payments  where payamount>0 ".$date_sql." group by heroid order by payamount desc limit ".(($page-1)*$page_size)." , ".$page_size);
-                  foreach($pays_data as $pay){
-                      $hero = M ('heroes', '', $db_hero)->query("select * from heroes where id=".$pay['heroid'] );
-                      $user=M ('users', '', $db_user)->query("select * from users where id=".$pay['userid']);
+                $pay_orders[$pay['orderid']]['username']=$user[0]['name'];
+                $platform=$this->get_platform($user[0]['platform']);
+                $pay_orders[$pay['orderid']]['platform']=$platform['name'];
+                $pay_orders[$pay['orderid']]['heroid']=$hero[0]['id'];
+                $pay_orders[$pay['orderid']]['heroname']=$hero[0]['name'];
+                $pay_orders[$pay['orderid']]['type']=$this->getType($hero[0]['type']);
+                $pay_orders[$pay['orderid']]['vip']=$hero[0]['vip'];
+                $pay_orders[$pay['orderid']]['level']=$hero[0]['level'];
+              }
+          }
+        }else if($hidetype==2){
+            $pays_data = M ('payments', '', $db_user)->query("SELECT p.*,sum(p.payamount*100) payamount FROM payments p,users u where p.userid=u.id and p.payamount>0 ".$platform_str.$choose_servers_str.$date_sql." group by p.heroid order by payamount desc limit ".(($page-1)*$page_size)." , ".$page_size);
+            foreach($pays_data as $pay){
+                $db=$this->get_db_from_serverid($pay['serverid']);
+                if(empty($db)) continue;
+                $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-                      $pay_ranks[$pay['heroid']]['timestamp']=date('Y-m-d',$pay['timestamp']);
-                      $pay_ranks[$pay['heroid']]['orderid']=$pay['orderid'];
-                      $pay_ranks[$pay['heroid']]['payamount']=round($pay['payamount']/100,2);
-                      $pay_ranks[$pay['heroid']]['paytype']=$pay['payid'];
-                      $pay_ranks[$pay['heroid']]['channel']=$pay['type'];
-                      $pay_ranks[$pay['heroid']]['status']=$pay['status'];
+                $hero = M ('heroes', '', $db_hero)->query("select * from heroes where id=".$pay['heroid'] );
+                $user=M ('users', '', $db_user)->query("select * from users where id=".$pay['userid']);
 
-                      $pay_ranks[$pay['heroid']]['username']=$user[0]['name'];
-                      $platform=$this->get_platform($hero[0]['platform']);
-                      $pay_ranks[$pay['heroid']]['platform']=$platform['name'];
-                      $pay_ranks[$pay['heroid']]['heroid']=$hero[0]['id'];
-                      $pay_ranks[$pay['heroid']]['heroname']=$hero[0]['name'];
-                      $pay_ranks[$pay['heroid']]['type']=$this->getType($hero[0]['type']);
-                      $pay_ranks[$pay['heroid']]['vip']=$hero[0]['vip'];
-                      $pay_ranks[$pay['heroid']]['level']=$hero[0]['level'];
-                  }
-                }
+                $pay_ranks[$pay['heroid']]['timestamp']=date('Y-m-d',$pay['timestamp']);
+                $pay_ranks[$pay['heroid']]['orderid']=$pay['orderid'];
+                $pay_ranks[$pay['heroid']]['payamount']=round($pay['payamount']/100,2);
+                $pay_ranks[$pay['heroid']]['paytype']=$pay['payid'];
+                $pay_ranks[$pay['heroid']]['channel']=$pay['type'];
+                $pay_ranks[$pay['heroid']]['status']=$pay['status'];
+
+                $pay_ranks[$pay['heroid']]['username']=$user[0]['name'];
+                $platform=$this->get_platform($user[0]['platform']);
+                $pay_ranks[$pay['heroid']]['platform']=$platform['name'];
+                $pay_ranks[$pay['heroid']]['heroid']=$hero[0]['id'];
+                $pay_ranks[$pay['heroid']]['heroname']=$hero[0]['name'];
+                $pay_ranks[$pay['heroid']]['type']=$this->getType($hero[0]['type']);
+                $pay_ranks[$pay['heroid']]['vip']=$hero[0]['vip'];
+                $pay_ranks[$pay['heroid']]['level']=$hero[0]['level'];
             }
           }
-        }
 
         $this->assign ( 'hidetype', $hidetype );
         $this->assign ( 'page_size', $page_size );
         $this->assign ( 'page', $page );
-        $this->assign ( 'size', $size );
+        $this->assign ( 'size', $all_size );
         $this->assign('start_date',$start_date);
         $this->assign('end_date',$end_date);
         $this->assign ( 'pay_orders', $pay_orders );
@@ -418,23 +440,25 @@ class RMBPlayerController extends LayoutController {
         $pays=array();
         $total_payamout=0;
         $total_heroid=0;
-        foreach ($values as $value){
-          foreach ($choose_servers as $choose_server){
-            $server=$this->get_server_from_id($choose_server);
-            if(empty($server)) continue;
-            if($value==$server['platform']){
-              $pay_data = M ('payments', '', $db_user)->query("select level,count(heroid) count,sum(pay) pay from (SELECT *,min(p.heroLevel) as level,sum(p.payamount*100) pay FROM payments p,users u where p.userid=u.id and p.payAmount*100>0 and p.serverId=".$choose_server." and u.platform=".$value."  group by p.heroid) pays group by level");
-              foreach($pay_data as $pay){
-                  $pays[$pay['level']]['level']=$pay['level'];
-                  $pays[$pay['level']]['count']=$pay['count'];
-                  $pays[$pay['level']]['pay']=$pay['pay']/100;
+        foreach ($choose_servers as $choose_server) {
+          $server=$this->get_server_from_id($choose_server);
+          if(empty($server)) continue;
+          foreach ($values as $value) {
+            $db=$this->get_db_from_serverid($server['server_id']);
+            if(empty($db)) continue;
 
-                  $total_heroid+=$pay['count'];
-                  $total_payamout+=$pay['pay']/100;
-              }
+            $pay_data = M ('payments', '', $db_user)->query("select level,count(heroid) count,sum(pay) pay from (SELECT *,min(p.heroLevel) as level,sum(p.payamount*100) pay FROM payments p,users u where p.userid=u.id and p.payAmount*100>0 and p.serverId=".$choose_server." and u.platform=".$value."  group by p.heroid) pays group by level");
+            foreach($pay_data as $pay){
+                $pays[$pay['level']]['level']=$pay['level'];
+                $pays[$pay['level']]['count']=$pay['count'];
+                $pays[$pay['level']]['pay']=$pay['pay']/100;
+
+                $total_heroid+=$pay['count'];
+                $total_payamout+=$pay['pay']/100;
             }
           }
         }
+
 
         $this->assign ( 'pays', $pays );
         $this->assign ( 'total_payamout', $total_payamout );
@@ -476,20 +500,20 @@ class RMBPlayerController extends LayoutController {
         $pays=array();
         $total_payamout=0;
         $total_heroid=0;
-        foreach ($values as $value){
-          foreach ($choose_servers as $choose_server){
-            $server=$this->get_server_from_id($choose_server);
-            if(empty($server)) continue;
-            if($value==$server['platform']){
-              $pay_data = M ('payments', '', $db_user)->query("select date,count(heroid) count,sum(pay) pay from (SELECT *,min(UNIX_TIMESTAMP(from_unixtime(timestamp,'%Y%m%d'))) as date,sum(p.payamount*100) pay FROM payments p,users u where p.userid=u.id and p.payAmount*100>0 and p.serverId=".$choose_server." and u.platform=".$value."  group by p.heroid) pays group by date");
-              foreach($pay_data as $pay){
-                  $pays[$pay['date']]['date']=$pay['date'];
-                  $pays[$pay['date']]['count']=$pay['count'];
-                  $pays[$pay['date']]['pay']=$pay['pay']/100;
+        foreach ($choose_servers as $choose_server) {
+          $server=$this->get_server_from_id($choose_server);
+          if(empty($server)) continue;
+          foreach ($values as $value) {
+            $db=$this->get_db_from_serverid($server['server_id']);
+            if(empty($db)) continue;
+            $pay_data = M ('payments', '', $db_user)->query("select date,count(heroid) count,sum(pay) pay from (SELECT *,min(UNIX_TIMESTAMP(from_unixtime(timestamp,'%Y%m%d'))) as date,sum(p.payamount*100) pay FROM payments p,users u where p.userid=u.id and p.payAmount*100>0 and p.serverId=".$choose_server." and u.platform=".$value."  group by p.heroid) pays group by date");
+            foreach($pay_data as $pay){
+                $pays[$pay['date']]['date']=$pay['date'];
+                $pays[$pay['date']]['count']=$pay['count'];
+                $pays[$pay['date']]['pay']=$pay['pay']/100;
 
-                  $total_heroid+=$pay['count'];
-                  $total_payamout+=$pay['pay']/100;
-              }
+                $total_heroid+=$pay['count'];
+                $total_payamout+=$pay['pay']/100;
             }
           }
         }
@@ -533,36 +557,33 @@ class RMBPlayerController extends LayoutController {
         $pays=array();
         $date=date('Y-m-d',time()+86400);
 
-        foreach ($values as $value){
-          foreach ($choose_servers as $choose_server){
-            $server=$this->get_server_from_id($choose_server);
-            if(empty($server)) continue;
-            if($value==$server['platform']){
-              $db=$this->get_db_from_serverid($server['server_id']);
-              if(empty($db)) continue;
-              $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
+        foreach ($choose_servers as $choose_server) {
+          $server=$this->get_server_from_id($choose_server);
+          if(empty($server)) continue;
+          foreach ($values as $value) {
+            $db=$this->get_db_from_serverid($server['server_id']);
+            if(empty($db)) continue;
+            $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-              $all_pay = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.heroid) pay_hero,count(distinct p.userid) pay_user from payments p,users u where p.userid=u.id and u.platform=".$server['platform']." and p.serverid=".$server['server_id']." and p.status=1 and p.payamount*10>0");
-              if(count($all_pay)>0) {
-                  $pays[$server['server_id']]['date']=date('Y-m-d',time());
-                  $platform=$this->get_platform($server['platform']);
-                  $pays[$server['server_id']]['platform']=$platform['name'];
-                  $pays[$server['server_id']]['pay_hero']+=$all_pay[0]['pay_hero'];
-                  $pays[$server['server_id']]['pay_user']+=$all_pay[0]['pay_user'];
-              }
-              $pays[$server['server_id']]['server_name']=$server['server_name'];
-              $hero = M ( 'heroes_stat', '', $db_hero)->query ( "select count(s.heroid) role from heroes_stat s,heroes h where h.platform=".$server['platform']." and s.heroid=h.id and UNIX_TIMESTAMP(from_unixtime(s.regTime,'%Y-%m-%d')) <= UNIX_TIMESTAMP('".$date."')" );
-              if(count($hero)>0) {
-                  $pays[$server['server_id']]['hero']+=$hero[0]['role'];
-              }
-              //$user = M ( 'users', '',  $db_user)->query ( "select count(h.id) user from users h where platform=".$server['platform']." and UNIX_TIMESTAMP(from_unixtime(UNIX_TIMESTAMP(h.created),'%Y-%m-%d')) <= UNIX_TIMESTAMP('".$date."')" );
-              $user = M ( 'users', '',  $db_hero)->query ( "select count(distinct h.userid) user from heroes h,heroes_stat s where h.id=s.heroid and h.userid!=0 and h.platform=".$server['platform']);
-              if(count($user)>0) {
-                  $pays[$server['server_id']]['user']+=$user[0]['user'];
-              }
+            $all_pay = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.heroid) pay_hero,count(distinct p.userid) pay_user from payments p,users u where p.userid=u.id and u.platform=".$value." and p.serverid=".$server['server_id']." and p.status=1 and p.payamount*10>0");
+            if(count($all_pay)>0) {
+                $platform=$this->get_platform($value);
+                $pays[$server['server_id']][$value]['date']=date('Y-m-d',time());
+                $pays[$server['server_id']][$value]['platform']=$platform['name'];
+                $pays[$server['server_id']][$value]['pay_hero']+=$all_pay[0]['pay_hero'];
+                $pays[$server['server_id']][$value]['pay_user']+=$all_pay[0]['pay_user'];
+            }
+            $pays[$server['server_id']][$value]['server_name']=$server['server_name'];
+            $hero = M ( 'heroes_stat', '', $db_hero)->query ( "select count(distinct s.heroid) role from ".$db['db_hero'].".heroes_stat s,".$db['db_hero'].".heroes h, ".$this->get_dbuser_name().".users u where h.userid=u.id and u.platform=".$value." and s.heroid=h.id and s.regTime <= UNIX_TIMESTAMP('".$date."')+86400" );
+            if(count($hero)>0) {
+                $pays[$server['server_id']][$value]['hero']+=$hero[0]['role'];
+            }
+            $user = M ( 'heroes', '',  $db_hero)->query ( "select count(distinct h.userid) user from ".$db['db_hero'].".heroes h,".$db['db_hero'].".heroes_stat s, ".$this->get_dbuser_name().".users u where h.userid=u.id and h.id=s.heroid and h.userid!=0 and u.platform=".$value ." and s.regTime <= UNIX_TIMESTAMP('".$date."')+86400" );
+            if(count($user)>0) {
+                $pays[$server['server_id']][$value]['user']+=$user[0]['user'];
+            }
           }
         }
-      }
 
         $this->assign ( 'pays', $pays );
         $this->assign ( 'choose_servers', $choose_servers );

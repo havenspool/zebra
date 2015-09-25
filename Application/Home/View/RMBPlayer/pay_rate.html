@@ -65,7 +65,8 @@ function check(){
         </thead>
         <tbody>
         <?php
-        foreach ($pays as $pay) {
+        foreach ($pays as $tmp) {
+        foreach ($tmp as $pay) {
             echo "<tr><td class='center'>";
             echo $pay['date'];
             echo "</td><td class='center'>";
@@ -85,7 +86,7 @@ function check(){
             echo "</td><td class='center'>";
             echo round(($pay['pay_user']/$pay['user'])*100,2);
             echo "</td></tr>";
-        }
+        }}
         ?>
         </tbody>
     </table>

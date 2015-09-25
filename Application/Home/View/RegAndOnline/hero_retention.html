@@ -164,6 +164,20 @@ function check(){
 							}
 						?>
 				</label>
+				<label>游戏服:
+						<?php
+							foreach ($servers as $server) {
+								echo "<input id='checkbox_servers[]' name='checkbox_servers[]' class='ace-checkbox-2' type='checkbox' value=".$server['server_id']." ";
+								foreach ($choose_servers as $choose_server) {
+									if($choose_server==$server['server_id']){
+										echo " checked ";
+										break;
+									}
+								}
+								echo " /><span class='lbl'>".$server['server_name']."</span>";
+							}
+						?>
+				</label>
 		</div>
 
 		<div class="row-fluid input-append date">
