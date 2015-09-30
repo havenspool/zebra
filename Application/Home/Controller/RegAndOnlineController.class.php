@@ -96,7 +96,7 @@ class RegAndOnlineController extends LayoutController {
 		    $end_date = $_POST['end_date'];
 
 		    if($_POST['start_date']==""){
-		        $start_date = date('Y-m-d',time()-3600*24*10);
+		        $start_date = date('Y-m-d',time()-3600*24*7);
 		    }
 
 		    if($_POST['end_date']==""){
@@ -123,6 +123,7 @@ class RegAndOnlineController extends LayoutController {
 				$stats=array();
 				$users=array();
 				$db_user=$this->get_dbuser();
+
 				foreach ($choose_servers as $choose_server) {
 						$server=$this->get_server_from_id($choose_server);
 						if(empty($server)) continue;
@@ -131,10 +132,11 @@ class RegAndOnlineController extends LayoutController {
 							if(empty($db)) continue;
 							$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
+							$user = M ( 'users', '',  $db_user)->query ( "select FROM_UNIXTIME(UNIX_TIMESTAMP(u.created), '%Y-%m-%d') day,count(u.id) user from ".$this->get_dbuser_name().".users u,".$db['db_hero'].".heroes h where u.id=h.userid and h.userid!=0 and u.platform=".$value." and UNIX_TIMESTAMP(u.created) >= UNIX_TIMESTAMP('".$start_date."') and UNIX_TIMESTAMP(u.created) <= UNIX_TIMESTAMP('".$end_date."') group by day" );
+							array_push($users, $user);
+
 							$stat = M ( 'heroes_stat', '', $db_hero)->query ( "select FROM_UNIXTIME(s.regTime, '%Y-%m-%d') day,count(s.heroid) role,0 type from ".$db['db_hero'].".heroes_stat s,".$db['db_hero'].".heroes h, ".$this->get_dbuser_name().".users u where u.id=h.userid and u.platform=".$value." and s.heroid=h.id and  s.regTime >= UNIX_TIMESTAMP('".$start_date."') and s.regTime <= UNIX_TIMESTAMP('".$end_date."') group by day" );
 							array_push($stats, $stat);
-							$user = M ( 'users', '',  $db_user)->query ( "select FROM_UNIXTIME(UNIX_TIMESTAMP(h.created), '%Y-%m-%d') day,count(h.id) user from users h where platform=".$value." and UNIX_TIMESTAMP(h.created) >= UNIX_TIMESTAMP('".$start_date."') and UNIX_TIMESTAMP(h.created) <= UNIX_TIMESTAMP('".$end_date."') group by day" );
-							array_push($users, $user);
 							$stat = M ( 'heroes_stat', '', $db_hero)->query ( "select FROM_UNIXTIME(s.regTime, '%Y-%m-%d') day,count(s.heroid) role,h.type type from ".$db['db_hero'].".heroes_stat s,".$db['db_hero'].".heroes h, ".$this->get_dbuser_name().".users u where u.id=h.userid and h.platform=".$value." and s.heroid=h.id and h.type=1 and  s.regTime >= UNIX_TIMESTAMP('".$start_date."') and s.regTime <= UNIX_TIMESTAMP('".$end_date."') group by day" );
 							array_push($stats, $stat);
 							$stat = M ( 'heroes_stat', '', $db_hero)->query ( "select FROM_UNIXTIME(s.regTime, '%Y-%m-%d') day,count(s.heroid) role,h.type type from ".$db['db_hero'].".heroes_stat s,".$db['db_hero'].".heroes h, ".$this->get_dbuser_name().".users u where u.id=h.userid and h.platform=".$value." and s.heroid=h.id and h.type=2 and s.regTime >= UNIX_TIMESTAMP('".$start_date."') and s.regTime <= UNIX_TIMESTAMP('".$end_date."') group by day" );
@@ -168,6 +170,7 @@ class RegAndOnlineController extends LayoutController {
 						$new_users [$us ['day']]['user'] += $us ['user'];
 					}
         }
+
         sort($new_users);
 
 			$this->assign('start_date',$start_date);
@@ -191,7 +194,7 @@ class RegAndOnlineController extends LayoutController {
 		$start_date = $_POST['start_date'];
 		$end_date = $_POST['end_date'];
 		if($_POST['start_date']==""){
-			$start_date = date('Y-m-d',time()-3600*24*30);
+			$start_date = date('Y-m-d',time()-3600*24*7);
 		}
 		if($_POST['end_date']==""){
 			$end_date = date('Y-m-d',time());
@@ -265,7 +268,7 @@ class RegAndOnlineController extends LayoutController {
 		$end_date = $_POST['end_date'];
 
 		if($_POST['start_date']==""){
-			$start_date = date('Y-m-d',time()-3600*24*30);
+			$start_date = date('Y-m-d',time()-3600*24*7);
 		}
 
 		if($_POST['end_date']==""){
@@ -379,9 +382,9 @@ class RegAndOnlineController extends LayoutController {
 					if(empty($db)) continue;
 					$data= M('level_data','', $this->get_gmserver())->where(" platform=".$value." and server_id=".$choose_server." and date=UNIX_TIMESTAMP('".$check_date."')")->select();
 					array_push($hero_data, $data);
-
 				}
 			}
+
 
 			$count=false;
 			foreach ( $hero_data as $data ) {
@@ -405,18 +408,26 @@ class RegAndOnlineController extends LayoutController {
 				foreach ( $hero_data as $tmp_data ) {
 					foreach ( $tmp_data as $data ) {
 						for($index=1;$index<=60;$index++){
-							$levels [$index] ['plat_id'] = $data ['plat_id'];
+							$levels [$index] ['plat_id'] = $data ['platform'];
 							$levels [$index] ['type'] = $data ['type'];
 							$levels [$index] ['date'] = $data ['date'];
-							if($data['type']==1) $levels [$index] ['type1'] = $data ['lv'.$index];
-							else if($data['type']==2) $levels [$index] ['type2'] = $data ['lv'.$index];
-							else if($data['type']==3) $levels [$index] ['type3'] = $data ['lv'.$index];
+							if($data['type']==1) $levels [$index] ['type1'] += $data ['lv'.$index];
+							else if($data['type']==2) $levels [$index] ['type2'] += $data ['lv'.$index];
+							else if($data['type']==3) $levels [$index] ['type3'] += $data ['lv'.$index];
 							$levels [$index] ['level']=$index;
 							$total+=$data ['lv'.$index];
 						}
 					}
 				}
-
+				// Array (
+				// [platform] => 0 [server_id] => 10001 [date] => 1442937600 [type] => 1 [all_user] => 1 [lv1] => 8 [lv2] => 7 [lv3] => 14 [lv4] => 15
+				// [lv5] => 1 [lv6] => 5 [lv7] => 14 [lv8] => 6 [lv9] => 4 [lv10] => 9 [lv11] => 5 [lv12] => 4 [lv13] => 2 [lv14] => 4 [lv15] => 2
+				// [lv16] => 1 [lv17] => 0 [lv18] => 0 [lv19] => 0 [lv20] => 0 [lv21] => 2 [lv22] => 1 [lv23] => 0 [lv24] => 1 [lv25] => 0
+				// [lv26] => 0 [lv27] => 3 [lv28] => 2 [lv29] => 1 [lv30] => 0 [lv31] => 0 [lv32] => 1 [lv33] => 0 [lv34] => 0 [lv35] => 1
+				// [lv36] => 1 [lv37] => 1 [lv38] => 1 [lv39] => 1 [lv40] => 0 [lv41] => 0 [lv42] => 1 [lv43] => 0 [lv44] => 0 [lv45] => 1
+				// [lv46] => 1 [lv47] => 0 [lv48] => 2 [lv49] => 0 [lv50] => 0 [lv51] => 0 [lv52] => 0 [lv53] => 2 [lv54] => 0 [lv55] => 1
+				//  [lv56] => 0 [lv57] => 1 [lv58] => 0 [lv59] => 0 [lv60] => 0 )
+				// print_r($levels);
 				$level_type=0;
 				$level_type1=0;
 				$level_type2=0;
@@ -458,8 +469,8 @@ class RegAndOnlineController extends LayoutController {
 					array_push($hero_data, $type2);
 					array_push($hero_data, $type3);
 
-					$data= M('level_data','', $this->get_gmserver())->where(" platform=".$value." and server_id=".$choose_server." and date=UNIX_TIMESTAMP('".$check_date."')")->select();
-					array_push($hero_data, $data);
+					// $data= M('level_data','', $this->get_gmserver())->where(" platform=".$value." and server_id=".$choose_server." and date=UNIX_TIMESTAMP('".$check_date."')")->select();
+					// array_push($hero_data, $data);
 				}
 			}
 
@@ -483,7 +494,7 @@ class RegAndOnlineController extends LayoutController {
 					$levels [$tmp ['level']]['type'] += $tmp ['role3'];
 
 					$levels [$tmp ['level']]['per'] =round ((100*$levels [$tmp ['level']]['type']) / $total, 2 );
-                }
+        }
 			}
 
 			sort($levels);
@@ -553,7 +564,7 @@ class RegAndOnlineController extends LayoutController {
 			$db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 			$DBuser = M ( 'dungeons_clearance', '',  $db_hero);
 			$times = $DBuser->query ( "SELECT d.dungeonid dungeonid,count(d.heroid) count,sum(d.all_times) all_times,sum(d.enter_times) enter_times FROM dungeons_clearance d,heroes h where d.heroid=h.id   group by d.dungeonid" );
-			$enter_hero_times = $DBuser->query ( "SELECT d.dungeonid dungeonid,count(d.heroid) enter_count FROM dungeons_clearance d,heroes h where d.heroid=h.id and d.enter_times>0   group by d.dungeonid" );
+			$enter_hero_times = $DBuser->query ( "SELECT d.dungeonid dungeonid,count(d.heroid) enter_count FROM dungeons_clearance d,heroes h where d.heroid=h.id and (d.enter_times>0 or d.all_times>0)   group by d.dungeonid" );
 			$all_hero_times = $DBuser->query ( "SELECT d.dungeonid dungeonid,count(d.heroid) all_count FROM dungeons_clearance d,heroes h where d.heroid=h.id and d.all_times>0   group by d.dungeonid" );
 
 			array_push($all_times, $times);

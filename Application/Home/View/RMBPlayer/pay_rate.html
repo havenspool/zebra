@@ -38,9 +38,14 @@ function check(){
           </label>
       </div>
 
-        <div class="row-fluid input-append date">
-            <input type="button" class="btn btn-small" value="查询" onclick="check();"/>
-        </div>
+      <div class="row-fluid input-append date">
+          <input type="button" class="btn btn-small" value="开始日期"/>
+          <input class="span2" id="start_date"  name="start_date" data-format="yyyy-MM-dd" type="date" <?php if($start_date!=0) echo "value='".$start_date."'";?> placeholder="开始日期"/>
+          <input type="button" class="btn btn-small" value="结束日期"/>
+          <input class="span2" id="end_date"  name="end_date" data-format="yyyy-MM-dd" type="date" <?php if($end_date!=0) echo "value='".$end_date."'";?> placeholder="结束日期"/>
+          <button class="btn btn-small" type="reset">重置</button>
+          <input type="button" class="btn btn-small" value="查询" onclick="check();"/>
+      </div>
     </form>
     <div id="chart_pie"></div>
 </div>
@@ -55,10 +60,10 @@ function check(){
             <th class="center">日期</th>
             <th class="center">平台</th>
             <th class="center">游戏服</th>
-            <th class="center">角色付费数</th>
+            <th class="center">总角色付费数</th>
             <th class="center">角色总数</th>
             <th class="center">角色付费(占比%)</th>
-            <th class="center">玩家付费数</th>
+            <th class="center">总玩家付费数</th>
             <th class="center">玩家总数</th>
             <th class="center">玩家付费(占比%)</th>
         </tr>
@@ -66,9 +71,10 @@ function check(){
         <tbody>
         <?php
         foreach ($pays as $tmp) {
-        foreach ($tmp as $pay) {
+        foreach ($tmp as $tmp1) {
+          foreach ($tmp1 as $pay) {
             echo "<tr><td class='center'>";
-            echo $pay['date'];
+            echo date('Y-m-d',$pay['date']);
             echo "</td><td class='center'>";
             echo $pay['platform'];
             echo "</td><td class='center'>";
@@ -86,7 +92,7 @@ function check(){
             echo "</td><td class='center'>";
             echo round(($pay['pay_user']/$pay['user'])*100,2);
             echo "</td></tr>";
-        }}
+        }}}
         ?>
         </tbody>
     </table>

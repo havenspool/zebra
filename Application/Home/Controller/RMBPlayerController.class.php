@@ -557,6 +557,15 @@ class RMBPlayerController extends LayoutController {
         $pays=array();
         $date=date('Y-m-d',time()+86400);
 
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
+        if($_POST['start_date']==""){
+          $start_date = date('Y-m-d',time()-3600*24*7);
+        }
+        if($_POST['end_date']==""){
+          $end_date = date('Y-m-d',time());
+        }
+
         foreach ($choose_servers as $choose_server) {
           $server=$this->get_server_from_id($choose_server);
           if(empty($server)) continue;
@@ -565,26 +574,34 @@ class RMBPlayerController extends LayoutController {
             if(empty($db)) continue;
             $db_hero="mysql://".$db['user'].":".$db['pwd']."@".$db['host'].":".$db['port']."/".$db['db_hero'];
 
-            $all_pay = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.heroid) pay_hero,count(distinct p.userid) pay_user from payments p,users u where p.userid=u.id and u.platform=".$value." and p.serverid=".$server['server_id']." and p.status=1 and p.payamount*10>0");
-            if(count($all_pay)>0) {
-                $platform=$this->get_platform($value);
-                $pays[$server['server_id']][$value]['date']=date('Y-m-d',time());
-                $pays[$server['server_id']][$value]['platform']=$platform['name'];
-                $pays[$server['server_id']][$value]['pay_hero']+=$all_pay[0]['pay_hero'];
-                $pays[$server['server_id']][$value]['pay_user']+=$all_pay[0]['pay_user'];
-            }
-            $pays[$server['server_id']][$value]['server_name']=$server['server_name'];
-            $hero = M ( 'heroes_stat', '', $db_hero)->query ( "select count(distinct s.heroid) role from ".$db['db_hero'].".heroes_stat s,".$db['db_hero'].".heroes h, ".$this->get_dbuser_name().".users u where h.userid=u.id and u.platform=".$value." and s.heroid=h.id and s.regTime <= UNIX_TIMESTAMP('".$date."')+86400" );
-            if(count($hero)>0) {
-                $pays[$server['server_id']][$value]['hero']+=$hero[0]['role'];
-            }
-            $user = M ( 'heroes', '',  $db_hero)->query ( "select count(distinct h.userid) user from ".$db['db_hero'].".heroes h,".$db['db_hero'].".heroes_stat s, ".$this->get_dbuser_name().".users u where h.userid=u.id and h.id=s.heroid and h.userid!=0 and u.platform=".$value ." and s.regTime <= UNIX_TIMESTAMP('".$date."')+86400" );
-            if(count($user)>0) {
-                $pays[$server['server_id']][$value]['user']+=$user[0]['user'];
+            for($tmp_date=strtotime($start_date);$tmp_date<=strtotime($end_date);$tmp_date+=86400){
+                // $heroes_data= M('heroes_data','', $this->get_gmserver())->where(" platform=".$value." and server_id=".$choose_server." and reg_date = ".$tmp_date." and login_date = ".($tmp_date+$day*86400))->select();
+                // if(count($heroes_data)>0)
+                //   array_push($all_hero_datas, $heroes_data);
+                  $all_pay = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.heroid) pay_hero,count(distinct p.userid) pay_user from payments p,users u where p.userid=u.id and u.platform=".$value." and p.serverid=".$server['server_id']." and p.status=1 and p.payamount*10>0 and p.timestamp<=".$tmp_date."+86400");
+                  if(count($all_pay)>0) {
+                      $platform=$this->get_platform($value);
+                      $pays[$tmp_date][$server['server_id']][$value]['date']=$tmp_date;
+                      $pays[$tmp_date][$server['server_id']][$value]['platform']=$platform['name'];
+                      $pays[$tmp_date][$server['server_id']][$value]['pay_hero']+=$all_pay[0]['pay_hero'];
+                      $pays[$tmp_date][$server['server_id']][$value]['pay_user']+=$all_pay[0]['pay_user'];
+                  }
+                  $pays[$tmp_date][$server['server_id']][$value]['server_name']=$server['server_name'];
+                  $hero = M ( 'heroes_stat', '', $db_hero)->query ( "select count(distinct s.heroid) role from ".$db['db_hero'].".heroes_stat s,".$db['db_hero'].".heroes h, ".$this->get_dbuser_name().".users u where h.userid=u.id and u.platform=".$value." and s.heroid=h.id and s.regTime <= '".$tmp_date."'+86400" );
+                  if(count($hero)>0) {
+                      $pays[$tmp_date][$server['server_id']][$value]['hero']+=$hero[0]['role'];
+                  }
+                  $user = M ( 'heroes', '',  $db_hero)->query ( "select count(distinct h.userid) user from ".$db['db_hero'].".heroes h,".$db['db_hero'].".heroes_stat s, ".$this->get_dbuser_name().".users u where h.userid=u.id and h.id=s.heroid and h.userid!=0 and u.platform=".$value ." and s.regTime <= '".$tmp_date."'+86400" );
+                  if(count($user)>0) {
+                      $pays[$tmp_date][$server['server_id']][$value]['user']+=$user[0]['user'];
+                  }
             }
           }
         }
+        // print_r($pays);
 
+        $this->assign('start_date',$start_date);
+    		$this->assign('end_date',$end_date);
         $this->assign ( 'pays', $pays );
         $this->assign ( 'choose_servers', $choose_servers );
     		$this->assign ( 'servers', $servers );

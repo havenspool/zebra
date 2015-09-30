@@ -35,6 +35,7 @@ class HomeController extends LayoutController {
     		}else{
     			$choose_servers = F($url.'choose_servers');//从缓存获取已选择服务器
     		}
+
         $daily=array();
         $all_user=array();
         // $daily['date']=$check_date;
@@ -52,7 +53,7 @@ class HomeController extends LayoutController {
               $daily[$value][$choose_server]['platform_name']=$platform['name'];
               $daily[$value][$choose_server]['server_name']=$server['server_name'];
 
-              $all_pay_num = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.userid) count,sum(p.payamount) payamount from payments p,users u where p.userid=u.id and u.platform=".$value." and p.serverId=".$server['server_id']." and p.status=1 and UNIX_TIMESTAMP(from_unixtime(p.timestamp,'%Y-%m-%d')) <= UNIX_TIMESTAMP('".$check_date."')+86400");
+              $all_pay_num = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.userid) count,sum(p.payamount) payamount from payments p,users u where p.userid=u.id and u.platform=".$value." and p.serverId=".$server['server_id']." and p.status=1 and UNIX_TIMESTAMP(from_unixtime(p.timestamp,'%Y-%m-%d')) <= UNIX_TIMESTAMP('".$check_date."')");
               if(count($all_pay_num)>0) {
                   $daily[$value][$choose_server]['all_pay_num']+=$all_pay_num[0]['count'];
                   $daily[$value][$choose_server]['all_payamount']+=$all_pay_num[0]['payamount'];
@@ -61,7 +62,7 @@ class HomeController extends LayoutController {
               if(count($all_user_num)>0) {
                   $daily[$value][$choose_server]['all_user_num']=$all_user_num[0]['user'];
               }
-              $pay_date = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.userid) pay_num,sum(p.payamount) payamount,count(p.orderid) pay_times from payments p,users u where p.userid=u.id and u.platform=".$value." and p.status=1 and UNIX_TIMESTAMP(from_unixtime(p.timestamp,'%Y-%m-%d')) = UNIX_TIMESTAMP('".$check_date."')");
+              $pay_date = M ( 'payments', '', $db_user)->query ( "SELECT  count(distinct p.userid) pay_num,sum(p.payamount) payamount,count(p.orderid) pay_times from payments p,users u where p.userid=u.id and u.platform=".$value." and p.serverid=".$server['server_id']." and p.status=1 and UNIX_TIMESTAMP(from_unixtime(p.timestamp,'%Y-%m-%d')) = UNIX_TIMESTAMP('".$check_date."')");
               if(count($pay_date)>0) {
                   $daily[$value][$choose_server]['pay_num']+=$pay_date[0]['pay_num'];
                   $daily[$value][$choose_server]['payamount']+=$pay_date[0]['payamount'];
